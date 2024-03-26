@@ -1,3 +1,13 @@
+Requirments:
+1. create a dotenv file ".env"
+  MYSQL_HOST=192.168.0.1
+  MYSQL_DATABASE=travago
+  MYSQL_USER=root
+  MYSQL_PASSWORD=root
+  MYSQL_ROOT_PASSWORD=root
+
+2. Serve the project
+
 # Travago - Travel Agencies Management App
 
 Travago is a comprehensive web application designed to streamline the management processes for travel agencies. It offers a user-friendly interface for managing bookings, customer information, and more. This README provides an overview of the project structure, installation instructions, and key functionalities.
