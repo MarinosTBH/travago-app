@@ -1,3 +1,7 @@
+<!-- 
+    Connection to the database using PDO (PHP Data Objects) to connect to a MySQL database. 
+    This file should be included at the top of each page that requires a connection to the database.
+ -->
 <?php
 defined('BASEPATH') or exit('No direct script access allowed');
 
