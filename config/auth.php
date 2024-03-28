@@ -6,8 +6,6 @@
 <?php
 // Start the session
 session_start();
-define('BASEPATH', true);
-require 'connect.php';
 
 // Define routes based on user roles
 switch ($_SESSION['USER']['user_type']) {
@@ -37,7 +35,7 @@ switch ($_SESSION['USER']['user_type']) {
         break;
     default:
         // Redirect to a default page or show an error message
-        header("Location: login");
+        header("Location: /login");
         exit;
 }
 

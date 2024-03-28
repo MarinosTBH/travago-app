@@ -1,4 +1,5 @@
 <?php
+require 'config/auth.php';
 include 'menu-bar.php';
 ?>
 <!DOCTYPE html>

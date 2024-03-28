@@ -1,5 +1,6 @@
 <?php
 session_start();
+require 'config/auth.php';
 include 'menu-bar.php';
 
 define('BASEPATH', true);
