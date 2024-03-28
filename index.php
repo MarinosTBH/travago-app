@@ -28,6 +28,9 @@ switch ($request) {
     case '/login':
         require __DIR__ . $viewDir . 'login/index.php';
         break;
+    case '/reset-password':
+        require __DIR__ . $viewDir . 'login/reset-password.php';
+        break;
     case '/register':
         require __DIR__ . $viewDir . 'register/agency.php';
         break;
@@ -59,3 +62,11 @@ switch ($request) {
         require __DIR__ . $viewDir . '404.php';
         break;
 }
+?>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/public/favicon.svg" type="image/x-icon"/>
+    <title>Travago</title>
+</html>

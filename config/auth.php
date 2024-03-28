@@ -43,7 +43,7 @@ switch ($_SESSION['USER']['user_type']) {
 
 // Check if the current page is allowed for the user's role
 $currentPage = basename($_SERVER['PHP_SELF']);
-if (!in_array($currentPage, $allowedPages ?? []) && $_SESSION['USER']['user_type']) {
+if (!in_array($currentPage, $allowedPages ?? []) && $_SESSION['USER']['user_type'] == 'customer') {
     // Page is not allowed for the user's role
     // Redirect to a default page or show an error message
     header("Location: unauthorized.php");

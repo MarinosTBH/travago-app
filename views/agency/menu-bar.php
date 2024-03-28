@@ -1,16 +1,5 @@
 <?php
-// get auth 
-// $authenticatedUser = true;
 
-// if ($authenticatedUser) {
-//     // get user data
-//     $name = "Tom Cook";
-//     $email = "tom@example.com";
-//     $role = "admin";
-// } else {
-//     // redirect to login
-//     header("Location: /login/index.php");
-// }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,14 +19,6 @@
 </head>
 
 <body>
-    <!--
-  This example requires updating your template:
-
-  ```
-  <html class="h-full bg-gray-100">
-  <body class="h-full">
-  ```
--->
     <div class="min-h-full">
         <nav class="bg-gray-800">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -101,7 +82,7 @@
                                     <!-- Active: "bg-gray-100", Not Active: "" -->
                                     <a href="profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
                                         tabindex="-1" id="user-menu-item-0">Your Profile</a>
-                                    <a href="login/index" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                    <a href="/config/logout.php" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
                                         tabindex="-1" id="user-menu-item-2">Sign out</a>
                                 </div>
                             </div>
@@ -179,7 +160,15 @@
         </nav>
 
         <header class="bg-white shadow">
-            <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+            
+            <div class="flex mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-x-4">
+            <a href="/home" class="text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-8 h-8 text-gray">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </a>
                 <h1 class="text-3xl font-bold tracking-tight text-gray-900">
                     <?php echo $title == "Agency" ? "Dashboard" : $title; ?>
                 </h1>

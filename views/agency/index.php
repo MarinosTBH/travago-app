@@ -1,4 +1,6 @@
 <?php
+require 'config/auth.php';
+
 define('BASEPATH', true);
 require 'config/connect.php';
 ?>

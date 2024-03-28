@@ -1,3 +1,9 @@
+<?php 
+session_start();
+if ( isset($_SESSION['USER']['id']) && $_SESSION['USER']['user_type'] !== 'customer' ){
+    require 'agency/menu-bar.php';
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">

@@ -2,8 +2,7 @@
 session_start();
 define('BASEPATH', true);
 require 'config/connect.php';
-// require "config/auth.php";
-
+require 'agency/menu-bar.php';
 // Check if the user is logged in
 if (!isset($_SESSION['USER']['id'])) {
     header("Location: /login");
@@ -48,8 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }
 } else {
     // If the form is not submitted, fetch the user data
-    try 
-    {
+    try {
         $sql = "SELECT * FROM users WHERE id=:id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':id', $userId);
@@ -66,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 ?>
 
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -83,23 +80,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 </head>
 
 <body>
-    <header class="bg-white shadow">
-        <div
-            class="w-full flex flex-row mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 gap-x-6 bg-white w-full">
-
-            <a href="/home" class="text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-8 h-8 text-gray">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </a>
-
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-                My profile
-            </h1>
-        </div>
-    </header>
     <div class="container flex flex-row justify-center p-6">
         <form action="/profile" method="POST">
             <div class="space-y-12 w-32">
@@ -122,10 +102,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                     <input type="text" name="username" id="username" autocomplete="username"
                                         class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                                         placeholder="janesmith" value="<?php echo $user['username']; ?>">
-                                    </div>
-                                        <p class="absolute w-full mx-auto text-center text-red-500">
-                                            <?php echo $error['username']; ?>
-                                        </p>
+                                </div>
+                                <p class="absolute w-full mx-auto text-center text-red-500">
+                                    <?php echo $error['username']; ?>
+                                </p>
                             </div>
                         </div>
 
@@ -161,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                             <label for="address"
                                 class="block text-sm font-medium leading-6 text-gray-900">Address</label>
                             <div class="mt-2">
-                                <input value="<?php echo $user['address'] ?>" type="text" name="address"
-                                    id="address" autocomplete="address"
+                                <input value="<?php echo $user['address'] ?>" type="text" name="address" id="address"
+                                    autocomplete="address"
                                     class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                             </div>
                         </div>
