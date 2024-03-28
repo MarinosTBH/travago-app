@@ -3,7 +3,7 @@
 // This is the front controller for the application 
 $request = $_SERVER['REQUEST_URI'];
 $viewDir = '/views/';
-
+// start db config 
 switch ($request) {
         // Home pages
     case '/':
