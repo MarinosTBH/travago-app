@@ -11,7 +11,6 @@ CREATE TABLE users (
     address VARCHAR(255),
     phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    isVerified BOOLEAN DEFAULT FALSE,
     user_type ENUM('admin', 'user', 'agency') DEFAULT 'user' NOT NULL,
     company_id INT
 );

@@ -71,24 +71,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/styles/output.css" rel="stylesheet">
     <title>My profile</title>
-    <style>
-        .container {
-            margin-top: 100px;
-        }
-    </style>
-
 </head>
 
 <body>
-    <div class="container flex flex-row justify-center p-6">
+    <div class="flex flex-row items-center justify-center px-6 w-full">
         <form action="/profile" method="POST">
-            <div class="space-y-12 w-32">
-                <div class="border-b border-gray-900/10 pb-12">
+            <!-- <div class="space-y-2 lg:w-1/2 mx-auto"> -->
+            <div class="space-y-12">
+                <div class="border-b border-gray-900/10 pb-4">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">Profile</h2>
-                    <p class="mt-1 text-sm leading-6 text-gray-600">This information will be displayed publicly so be
+                    <p class=" text-sm leading-6 text-gray-600">This information will be displayed publicly so be
                         careful what you share.</p>
 
-                    <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
 
                         <!-- username -->
                         <div class="sm:col-span-4">
@@ -123,10 +118,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <div class="border-b border-gray-900/10 pb-12">
                     <h2 class="text-base font-semibold leading-7 text-gray-900">Personal Information</h2>
 
-                    <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-
-                        <!-- email -->
-                        <div class="sm:col-span-4">
+                    <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"> <!-- email -->
+                        <div class="sm:col-span-3">
                             <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email
                                 address</label>
                             <div class="mt-2">
@@ -137,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         </div>
 
                         <!-- address -->
-                        <div class="col-span-full">
+                        <div class="sm:col-span-3">
                             <label for="address"
                                 class="block text-sm font-medium leading-6 text-gray-900">Address</label>
                             <div class="mt-2">
@@ -191,17 +184,19 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                             </div>
                         </div>
 
-                        <div class="w-full mt-6 flex items-center justify-center gap-x-6">
-                            <button type="button" class="w-full text-sm font-semibold leading-6 text-gray-900 px-3 py-2
-                        ">
+                        <div class="sm:col-span-6 w-full mt-6 flex items-center justify-center gap-x-6">
+                            <button type="button"
+                                class="w-full text-sm font-semibold leading-6 text-gray-900 px-3 py-2">
                                 <a href="/home">
                                     Cancel
                                 </a>
                             </button>
                             <button type="submit"
                                 class="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm 
-                    hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                                hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                            </button>
                         </div>
+                    </div>
         </form>
     </div>
 
