@@ -3,6 +3,7 @@ session_start();
 $user = $_SESSION['USER'];
 $role = $user['user_type'];
 $name = $user['username'];
+$companyName = $user['company_name'];
 $email = $user['email'];
 
 $path = $_SERVER['REQUEST_URI'];
@@ -18,7 +19,6 @@ $title = ucfirst($title);
     <link href="/travago/styles/output.css" rel="stylesheet">
     <title>
         <?php
-
         echo $title;
         ?>
     </title>
@@ -30,13 +30,18 @@ $title = ucfirst($title);
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex h-16 items-center justify-between">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0">
-                            <a href="/travago/home">
+                        <a href="/travago/home">
+                            <div class="flex-shrink-0 flex items-center gap-2">
                                 <img class="h-8 w-8"
                                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                                     alt="Your Company">
-                            </a>
-                        </div>
+                                <p>
+                                    <a href="/travago/home" class="text-white font-semibold">
+                                        <?php echo $companyName; ?>
+                                    </a><!--TODO company name-->
+                                </p>
+                            </div>
+                        </a>
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <?php
@@ -59,7 +64,7 @@ $title = ucfirst($title);
                     <div class="hidden md:block">
                         <div class="ml-4 flex items-center md:ml-6">
                             <div>
-                                <p class="text-white">
+                                <p class="capitalize text-white font-semibold">
                                     <?php
                                     echo $role;
                                     ?>
@@ -93,9 +98,11 @@ $title = ucfirst($title);
                         </div>
                     </div>
                     <div class="-mr-2 flex items-center space-x-4 md:hidden">
-                        <?php
-                        echo "<p class='text-white'>$role</p>";
-                        ?>
+                        <p class="text-white font-semibold capitalize">
+                            <?php
+                            echo $role;
+                            ?>
+                        </p>
                         <!-- Mobile menu button -->
                         <button type="button" onclick='toggleMenu()'
                             class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"

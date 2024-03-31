@@ -24,7 +24,6 @@ try {
   echo "Error: " . $e->getMessage();
 }
 
-
 ////////////////////////////// DELETE 
 try {
   // Check if ID is set and valid
@@ -44,31 +43,63 @@ try {
 }
 
 /////////////////////////////// GET FOR ADMIN
-if ($user['user_type'] == "admin") {
-  try {
-    // get all users as admin 
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE user_type != 'admin'");
-    $stmt->execute();
-    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+if (isset($_GET['search'])) {
+  $search = $_GET['search'];
+  if (empty($search)) {
+    $errorSearch = "Please enter a keyword to search";
+  } else {
+
+    if ($user['user_type'] == "admin") {
+      try {
+        /////////////////////////////// get all users as admin 
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id LIKE '%$search%' user_type != 'admin'");
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+      }
+    } else if ($user['user_type'] == "agency") {
+
+      /////////////////////////////// GET FOR agency
+      try {
+
+        $sql = "SELECT * FROM users WHERE id LIKE '%$search%' AND company_id = :company_id AND user_type != 'agency'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':company_id', $company_id);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+      }
+
+    }
   }
-} else if ($user['user_type'] == "agency") {
+} else {
+  if ($user['user_type'] == "admin") {
+    try {
+      /////////////////////////////// get all users as admin 
+      $stmt = $pdo->prepare("SELECT * FROM users WHERE user_type != 'admin'");
+      $stmt->execute();
+      $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      echo "Error: " . $e->getMessage();
+    }
+  } else if ($user['user_type'] == "agency") {
 
-  /////////////////////////////// GET FOR agency
-  try {
+    /////////////////////////////// GET FOR agency
+    try {
 
-    $sql = "SELECT * FROM users WHERE company_id = :company_id AND user_type != 'agency'";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':company_id', $company_id);
-    $stmt->execute();
-    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-  } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+      $sql = "SELECT * FROM users WHERE company_id = :company_id AND user_type != 'agency'";
+      $stmt = $pdo->prepare($sql);
+      $stmt->bindParam(':company_id', $company_id);
+      $stmt->execute();
+      $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+      echo "Error: " . $e->getMessage();
+    }
+
   }
-
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -99,6 +130,33 @@ if ($user['user_type'] == "admin") {
 
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-24">
     <div class="relative overflow-x-auto">
+      <!-- Search -->
+      <div class="p-2 w-full flex justify-between">
+        <form method="GET" action="/travago/agency/customers">
+          <div class='flex flex-wrap gap-2 items-center'>
+            <input type="text" class="w-32 lg:w-auto p-2 border border-gray-300 rounded-md" name="search"
+              value="<?php echo $_GET['search'] ?? ''; ?>" placeholder="Search by Id">
+            <?php
+            if (isset($_GET['search'])) {
+              echo "<a href='/travago/agency/customers'
+                        class='rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
+                        >Clear</a>";
+              if (!empty($_GET['search'])) {
+                echo "<p class='text-green-500 text-sm'>Showing results for: <span class='text-sm text-green-500'>Id: {$_GET['search']}</span></p>";
+              }
+            } else {
+              echo "<button type='submit'
+                      class='hidden lg:block rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+                    Search</button>";
+            }
+            if ($errorSearch) {
+              echo "<p class='text-xs text-red-500'>$errorSearch</p>";
+            }
+
+            ?>
+          </div>
+        </form>
+      </div>
       <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
           <tr>
@@ -132,19 +190,22 @@ if ($user['user_type'] == "admin") {
 
         <tbody>
           <?php
-          foreach ($users as $user) {
-            $active = $user['isVerified'] == 1 ? 'Yes' : 'No';
+          if (empty($users)) {
+            echo "<tr><td colspan='10' class='text-center text-lg'>No trips found</td></tr>";
+          } else {
+            foreach ($users as $user) {
+              $active = $user['isVerified'] == 1 ? 'Yes' : 'No';
 
-            $id = $user['id'];
-            $email = $user['email'];
-            $isVerified = $user['isVerified'];
-            $address = $user['address'];
-            $phone = $user['phone'];
-            $created_at = $user['created_at'];
-            $role = $user['user_type'];
-            $company_id = $user['company_id'];
+              $id = $user['id'];
+              $email = $user['email'];
+              $isVerified = $user['isVerified'];
+              $address = $user['address'];
+              $phone = $user['phone'];
+              $created_at = $user['created_at'];
+              $role = $user['user_type'];
+              $company_id = $user['company_id'];
 
-            echo " <tr
+              echo " <tr
                     class='odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'>
                     <th scope='row' class='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'>
                         $id
@@ -183,6 +244,7 @@ if ($user['user_type'] == "admin") {
                         </form>
                     </td>
                 </tr>";
+            }
           }
           ?>
         </tbody>

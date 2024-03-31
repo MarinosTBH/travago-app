@@ -65,14 +65,9 @@ if (isset($_SESSION['USER']) || isset($_SESSION['USER']['id'])) {
                     $stmt->bindParam(':user_type', $user_type);
                     $stmt->bindParam(':company_id', $company_id);
 
-
-                    if ($stmt->execute()) {
-                        echo '<script>alert("New account created.")</script>';
-                        //redirect to another page
-                        echo '<script>window.location.replace("/travago/login")</script>';
-                    } else {
-                        $error = "An error occurred";
-                    }
+                    $stmt->execute();
+                    echo '<script>alert("New account created.")</script>';
+                    echo '<script>window.location.replace("/travago/login")</script>';
                 }
             } catch (PDOException $e) {
                 $error = "Error: " . $e->getMessage();

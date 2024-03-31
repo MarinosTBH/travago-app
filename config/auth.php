@@ -29,9 +29,9 @@ switch ($userType) {
     case 'user':
         // Customer can only visit trips
         $allowedPages = [
-            'home',
-            'trips',
-            'profile',
+            '/home',
+            '/trips',
+            '/profile'
         ];
         break;
     default:
@@ -45,6 +45,6 @@ $currentPage = basename($_SERVER['REQUEST_URI']);
 if (!in_array($currentPage, $allowedPages ?? []) && $userType == 'user') {
     // Page is not allowed for the user's role
     // Redirect to a default page or show an error message
-    header("Location: 404.php");
+    header("Location: /travago/404.php");
     exit;
 }

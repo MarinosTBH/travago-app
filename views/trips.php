@@ -1,5 +1,5 @@
 <?php
-require 'config/auth.php';
+// require 'config/auth.php';
 ?>
 <html lang="en">
 

@@ -5,10 +5,13 @@ require 'config/connect.php';
 require 'utils/menu-bar.php';
 
 $user = $_SESSION['USER'];
+
 $company_id = $user['company_id'];
 $role = $user['user_type'];
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">

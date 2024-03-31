@@ -6,6 +6,7 @@
 // Create db travago if it does not exist and create tables if they do not exist  here
 
 // Create a new database named travago
+include 'init_db.php'; 
 
 $host = "localhost";
 
@@ -75,5 +76,3 @@ try {
 // } catch (PDOException $e) {
 //   echo $sql . "<br>" . $e->getMessage();
 // }
-
-$conn = null;

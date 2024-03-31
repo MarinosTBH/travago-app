@@ -1,7 +1,6 @@
 <?php
 session_start();
 require 'config/connect.php';
-require 'config/auth.php';
 
 if ($_SESSION['USER']['user_type'] != 'user') {
     require 'utils/menu-bar.php';

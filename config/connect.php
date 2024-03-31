@@ -3,7 +3,6 @@
     This file should be included at the top of each page that requires a connection to the database.
  -->
 <?php
-// require_once 'config/init_db.php';
 
 $host = "127.0.0.1";
 $dbname = "travago";

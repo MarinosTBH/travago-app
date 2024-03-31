@@ -65,31 +65,29 @@ if (isset($_POST['submit'])) {
   if (!is_numeric($price) || $price <= 0) {
     $erreurs[] = "Price must be a positive number.";
   } else {
-
-    try {
-      // Les données peuvent être insérées en base de données ou traitées ici
-      $sql = "INSERT INTO tours (program, description, destination, number_of_seats, departure_date, arrival_date, accomodation, transport_type, price, company_id)
+    if (empty($erreurs)) {
+      try {
+        // Les données peuvent être insérées en base de données ou traitées ici
+        $sql = "INSERT INTO tours (program, description, destination, number_of_seats, departure_date, arrival_date, accomodation, transport_type, price, company_id)
         VALUES (:program, :description, :destination, :number_of_seats, :departure_date, :arrival_date, :accomodation, :transport_type, :price, :company_id)";
-      $stmt = $pdo->prepare($sql);
-      $stmt->bindParam(':program', $program);
-      $stmt->bindParam(':description', $description);
-      $stmt->bindParam(':destination', $destination);
-      $stmt->bindParam(':number_of_seats', $number_of_seats);
-      $stmt->bindParam(':departure_date', $date_arrivee);
-      $stmt->bindParam(':arrival_date', $date_retour);
-      $stmt->bindParam(':accomodation', $accomodation);
-      $stmt->bindParam(':transport_type', $typeTransport);
-      $stmt->bindParam(':price', $price);
-      $stmt->bindParam(':company_id', $company_id);
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':program', $program);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':destination', $destination);
+        $stmt->bindParam(':number_of_seats', $number_of_seats);
+        $stmt->bindParam(':departure_date', $date_arrivee);
+        $stmt->bindParam(':arrival_date', $date_retour);
+        $stmt->bindParam(':accomodation', $accomodation);
+        $stmt->bindParam(':transport_type', $typeTransport);
+        $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':company_id', $company_id);
 
-      if ($stmt->execute()) {
+        $stmt->execute();
         echo "<script>alert('Tour added successfully!')</script>";
         echo "<script>window.location.replace('/travago/agency/circuits')</script>";
-      } else {
-        echo "<script>alert('Error executing query')</script>";
+      } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
       }
-    } catch (PDOException $e) {
-      echo "Error: " . $e->getMessage();
     }
   }
 }
@@ -102,8 +100,8 @@ if (isset($_POST['submit'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>Add Tour</title>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <title>Add circuit</title>
 </head>
 
 <body>
@@ -117,7 +115,7 @@ if (isset($_POST['submit'])) {
         </svg>
       </a>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-        Add tour
+        Add circuit
       </h1>
     </div>
   </header>
@@ -126,8 +124,8 @@ if (isset($_POST['submit'])) {
     <form action="/travago/agency/circuits/add-circuit" method="post" class="w-full px-2">
       <div class="space-y-2">
         <div class="w-full border-b border-gray-900/10 pb-8">
-          <h2 class="text-base font-semibold leading-7 text-gray-900">Add Tour</h2>
-          <p class="mt-1 text-sm leading-6 text-gray-600">Add informations about the tour.</p>
+          <h2 class="text-base font-semibold leading-7 text-gray-900">Add circuit</h2>
+          <p class="mt-1 text-sm leading-6 text-gray-600">Add informations about the circuit.</p>
 
           <?php
           if (!empty($erreurs)) {

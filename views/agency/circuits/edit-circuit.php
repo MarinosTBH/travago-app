@@ -1,276 +1,131 @@
+<!-- In this file we are going to add a new circuit to the database
+PS: circuit is the name used in front-end for the tour entity from the backend-->
 <?php
 require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
 
+$user = $_SESSION['USER'];
+$company_id = $user['company_id'];
+// Get the tour id from the URL
+$id = $_GET['circuitId'];
+
+// Initialisation des variables pour stocker les messages d'erreur
+$erreurs = array();
 if (isset($_POST['submit'])) {
+  // Récupérer les valeurs des champs date d'arrivée et date de retour
+  $date_arrivee = $_POST['departure_date'];
+  $date_retour = $_POST['arrival_date'];
 
-  //recuperation 
-  $d = @$_POST['desti'];
-  $f = @$_POST['flight'];
-  $s = @$_POST['seats'];
-  $p = @$_POST['plan'];
-  $de = @$_POST['dep'];
-  $a = @$_POST['arrival'];
-  $h = @$_POST['hotel'];
-  $user = $_SESSION['USER'];
-  $company_id = $user['company_id'];
-
-  if (is_numeric($_POST['desti']) || is_numeric($_POST['flight']) == FALSE || is_numeric($_POST['seats']) == FALSE || is_numeric($_POST['plan']) || is_numeric($_POST['hotel'])) {
-    $o = "Please verify your informations type!";
-  } else {
-    $q = $pdo->prepare("INSERT INTO trips(Destination, Flight_number, Number_of_seats, Plan, Departure_date, Arrival_date, Hotel, company_id) 
-    VALUES (:Destination, :Flight_number, :Number_of_seats, :Plan, :Departure_date, :Arrival_date, :Hotel, :company_id)");
-    $q->bindParam(':Destination', $d);
-    $q->bindParam(':Flight_number', $f);
-    $q->bindParam(':Number_of_seats', $s);
-    $q->bindParam(':Plan', $p);
-    $q->bindParam(':Departure_date', $de);
-    $q->bindParam(':Arrival_date', $a);
-    $q->bindParam(':Hotel', $h);
-    $q->bindParam(':company_id', $company_id);
-
-
-    try {
-      if ($q->execute()) {
-        echo "<script>alert('Trip added successfully!')</script>";
-        echo "<script>window.location.replace('/travago/agency/trips')</script>";
-      } else {
-        echo "<script>alert('Error executing query')</script>";
-      }
-    } catch (PDOException $e) {
-      echo "Error: " . $e->getMessage();
+  // Vérifier si les champs ne sont pas vides
+  if (!empty($date_arrivee) && !empty($date_retour)) {
+    // Vérifier si la date de retour est inférieurà la date d'arrivée
+    if ($date_retour <= $date_arrivee) {
+      // Afficher un message d'erreur si la date de retour est antérieure à la date d'arrivée
+      $erreurs[] = "Arrival date must be before departure date";
     }
+  }
+  if (empty($date_arrivee) || empty($date_retour)) {
+    $erreurs[] = "Please fill in the dates";
+  }
 
+  // Vérification du programme (chaîne de caractères)
+  $program = $_POST['program'];
+  if (empty($program)) {
+    $erreurs[] = "Program cannot be empty.";
+  }
 
-    $el = "Trip added successfully!";
+  // Vérification de la description (chaîne de caractères)
+  $description = $_POST['description'];
+  if (empty($description)) {
+    $erreurs[] = "Description cannot be empty";
+  }
+
+  // Vérification de la destination (chaîne de caractères)
+  $destination = $_POST['destination'];
+  if (empty($destination)) {
+    $erreurs[] = "Destination cannot be empty.";
+  }
+
+  // Vérification du nombre de places (entier)
+  $number_of_seats = $_POST['number_of_seats'];
+  if (!is_numeric($number_of_seats) || $number_of_seats <= 0) {
+    $erreurs[] = "Number of seats must be a positive integer.";
+  }
+  // Vérification de l'hébergement (chaîne de caractères)
+  $accomodation = $_POST['accomodation'];
+  if (empty($accomodation)) {
+    $erreurs[] = "Accomodation cannot be empty.";
+  }
+
+  // Vérification du type de transport (chaîne de caractères)
+  $typeTransport = $_POST['transport_type'];
+  if (empty($typeTransport)) {
+    $erreurs[] = "Transport type cannot be empty.";
+  }
+
+  // Vérification du price (nombre réel)
+  $price = $_POST['price'];
+  if (!is_numeric($price) || $price <= 0) {
+    $erreurs[] = "Price must be a positive number.";
+  } else {
+    // errors
+    if (empty($erreurs)) {
+      try {
+        // Les données peuvent être insérées en base de données ou traitées ici
+        $sql = "UPDATE tours SET program = :program, 
+      description = :description,
+      destination = :destination, 
+      number_of_seats = :number_of_seats, 
+      departure_date = :departure_date, 
+      arrival_date = :arrival_date, 
+      accomodation = :accomodation, 
+      transport_type = :transport_type, 
+      price = :price WHERE id = :id";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':program', $program);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':destination', $destination);
+        $stmt->bindParam(':number_of_seats', $number_of_seats);
+        $stmt->bindParam(':departure_date', $date_arrivee);
+        $stmt->bindParam(':arrival_date', $date_retour);
+        $stmt->bindParam(':accomodation', $accomodation);
+        $stmt->bindParam(':transport_type', $typeTransport);
+        $stmt->bindParam(':price', $price);
+        $stmt->bindParam(':id', $id);
+
+        $stmt->execute();
+        echo "<script>alert('Tour modified successfully!')</script>";
+      } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+      }
+    }
   }
 }
-?>
 
+// Get the tour from the database
+try {
+  $stmt = $pdo->prepare("SELECT * FROM tours WHERE id = :id");
+  $stmt->bindParam(':id', $id);
+  $stmt->execute();
+  $tour = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo "Error: " . $e->getMessage();
+}
+
+?>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--<script src="https://cdn.tailwindcss.com"></script>-->
-  <title>Add trips</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-box-sizing: border-box;
-      -moz-box-sizing: border-box;
-      -webkit-font-smoothing: antialiased;
-      -moz-font-smoothing: antialiased;
-      -o-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    body {
-      font-family: "Open Sans", Helvetica, Arial, sans-serif;
-      font-weight: 400;
-      font-size: 16px;
-      line-height: 30px;
-      /* color: rgb(32, 32, 32); */
-      /* background: rgb(20, 37, 53); */
-    }
-
-    .container {
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    #contact input,
-    textarea,
-    button {
-      font: 400 16px "Open Sans", Helvetica, Arial, sans-serif;
-    }
-
-    #contact {
-      background: #e7e7e7;
-      padding: 25px;
-      margin: 50px 0;
-      border-radius: 12px;
-    }
-
-    #contact h3 {
-      color: rgb(0, 0, 0);
-      display: block;
-      font-size: 30px;
-      font-weight: 700;
-      margin-left: 20px;
-    }
-
-    #contact h4 {
-      margin: 5px 0 15px;
-      display: block;
-      color: rgb(31, 31, 31);
-      font-size: 13px;
-      margin-left: 20px;
-    }
-
-    fieldset {
-      border: medium none !important;
-      margin: 0 0 10px;
-      min-width: 100%;
-      padding: 0;
-      width: 100%;
-    }
-
-    #contact input {
-      width: 50%;
-      border: 1px solid #CCC;
-      border-radius: 12px;
-      background: #FFF;
-      margin: 0 0 5px;
-      padding: 10px;
-    }
-
-    #contact input:hover {
-      -webkit-transition: border-color 0.3s ease-in-out;
-      -moz-transition: border-color 0.3s ease-in-out;
-      transition: border-color 0.3s ease-in-out;
-      border: 1px solid rgb(134, 134, 134);
-
-    }
-
-    #contact button {
-      cursor: pointer;
-      width: 20%;
-      border: none;
-      background: rgb(0, 0, 0);
-      color: #FFF;
-      margin: 0 0 5px 20px;
-      padding: 10px;
-      font-size: 15px;
-      border-radius: 142px;
-
-    }
-
-    #contact button:hover {
-      background: rgb(33, 164, 240);
-      -webkit-transition: background 0.3s ease-in-out;
-      -moz-transition: background 0.3s ease-in-out;
-      transition: background-color 0.3s ease-in-out;
-    }
-
-    #contact button[type="submit"]:active {
-      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    #contact input:focus {
-      outline: 0;
-      border: 1px solid rgb(82, 81, 81);
-    }
-
-    ::-webkit-input-placeholder {
-      color: rgb(66, 66, 66);
-    }
-
-
-    .row {
-      display: flex;
-      width: 100% !important;
-    }
-
-    .row .col {
-      width: 50%;
-      margin: 20px;
-    }
-
-    input[type="radio"] {
-      width: 10% !important;
-    }
-
-    #contact .row .radio {
-      border: 1px solid rgb(97, 97, 97) !important;
-      background-color: rgb(255, 255, 255);
-      margin-bottom: 5px !important;
-    }
-
-    .success {
-      color: green;
-      font-weight: 700;
-      padding: 5px;
-      text-align: center;
-    }
-
-    .failed {
-      color: red;
-      font-weight: 700;
-      padding: 5px;
-      text-align: center;
-    }
-
-    /*body {
-    
-        /*width: 50%;*/
-    /* padding: 20px;
-      /*}*/
-    #add {
-      color: black;
-      font-size: 45px;
-      text-align: center;
-    }
-
-    #info {
-      font-size: 25px;
-    }
-
-    #button {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
-      align-items: center;
-      margin-top: -5px;
-      margin-bottom: -5px;
-
-    }
-
-    .can:hover {
-      background: red;
-
-    }
-
-    #i {
-      font-size: 25px;
-      color: green;
-      text-align: center;
-      font-family: "Open Sans", Helvetica, Arial, sans-serif;
-      font-weight: bold;
-      margin-top: 12px;
-    }
-
-    #o {
-      font-size: 20px;
-      color: red;
-      text-align: center;
-      font-family: verdana;
-
-    }
-
-    #text {
-
-      border: 1px solid #CCC;
-      border-radius: 12px;
-      background: #FFF;
-      margin: 0 0 5px;
-      padding: 10px;
-    }
-
-    #co {
-      width: 100%;
-    }
-  </style>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <title>Edit circuit</title>
 </head>
 
 <body>
-  <header class="bg-white shadow border-b w-full">
+  <header class="bg-white shadow">
     <div class="flex mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-x-4">
       <a href="/travago/agency/circuits" class="text-gray-800">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -280,110 +135,113 @@ if (isset($_POST['submit'])) {
         </svg>
       </a>
       <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-        Trips
+        Edit circuit N°<?php echo $tour['id']; ?>
       </h1>
     </div>
   </header>
-  <div class="container">
-    <form id="contact" method="post" action="/travago/agency/trips/add-trip">
-      <h2 class="text-base font-semibold leading-7 text-gray-900" id="add">Edit a trip</h2>
-      <!--<p class="mt-1 text-sm leading-6 text-gray-600" id="info">                      </p>-->
-      <?php
+  <div class="flex flex-col items-center justify-center w-full lg:w-1/2 mx-auto ">
 
-      $i = @$el;
-      echo "<div id='i'>$i</div>";
-      $oo = @$o;
-      echo "<div id='o'>$oo</div>";
+    <form action="/travago/agency/circuits/edit-circuit?circuitId=<?php echo $id; ?>" method="post" class="w-full px-2">
+      <div class="space-y-2">
+        <div class="w-full border-b border-gray-900/10 pb-8">
+          <h2 class="text-base font-semibold leading-7 text-gray-900">Edit circuit</h2>
+          <p class="mt-1 text-sm leading-6 text-gray-600">Edit informations about the circuit.</p>
 
+          <?php
+          if (!empty($erreurs)) {
+            echo "<div class='flex flex-col'><br>";
+            foreach ($erreurs as $erreur) {
+              echo "<p class='text-sm text-red-500'>- $erreur<br> </p>";
+            }
+            echo "</div>";
+          }
+          ?>
 
-      ?>
+          <div class="w-full mt-10 grid grid-cols-1 gap-x-2 gap-y-4 lg:gap-x-4 lg:gap-y-8 sm:grid-cols-6">
+            <div class="sm:col-span-3">
+              <label for="program" class="block text-sm font-medium leading-6 text-gray-900">Program</label>
+              <div class="mt-2">
+                <input type="text" name="program" value="<?php echo $tour['program']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
 
-      <div class="row">
-        <div class="col">
-          <fieldset>
-            <label for="first-name">Destination
-              <?php echo " <font color='red'> * </font>"; ?>
-            </label>
-          </fieldset>
-          <fieldset>
-            <input type="text" name="desti" autocomplete="given-name" required>
-          </fieldset>
+            <div class="sm:col-span-4">
+              <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Description:</label>
+              <div class="mt-2">
+                <input name="description" type="text" value="<?php echo $tour['description']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
 
-          <fieldset>
-            <label for="street-address">Flight Number
-              <?php echo " <font color='red'> * </font>"; ?>
-            </label>
-          </fieldset>
-          <fieldset>
-            <input type="text" name="flight" autocomplete="street-address" required>
-          </fieldset>
-          <fieldset>
-            <label for="street-address">Number of seats
-              <?php echo " <font color='red'> * </font>"; ?>
-            </label>
-          </fieldset>
-          <fieldset>
-            <input type="text" name="seats" autocomplete="street-address" required>
-          </fieldset>
+            <div class="col-span-full">
+              <label for="destination" class="block text-sm font-medium leading-6 text-gray-900">Destination:</label>
+              <div class="mt-2">
+                <input type="text" name="destination" value="<?php echo $tour['destination']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+
+            <div class="sm:col-span-2 sm:col-start-1">
+              <label for="number_of_seats" class="block text-sm font-medium leading-6 text-gray-900">Number of
+                seats</label>
+              <div class="mt-2">
+                <input type="text" name="number_of_seats" value="<?php echo $tour['number_of_seats']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="departure_date" class="block text-sm font-medium leading-6 text-gray-900">Departure
+                date</label>
+              <div class="mt-2">
+                <input type="date" name="departure_date" value="<?php echo $tour['departure_date']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="arrival_date" class="block text-sm font-medium leading-6 text-gray-900">Arrival date</label>
+              <div class="mt-2">
+                <input type="date" name="arrival_date" value="<?php echo $tour['arrival_date']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+            <div class="sm:col-span-2 sm:col-start-1">
+              <label for="accomodation" class="block text-sm font-medium leading-6 text-gray-900">Accomodation</label>
+              <div class="mt-2">
+                <input type="text" name="accomodation" value="<?php echo $tour['accomodation']; ?>" class=" block w-full rounded-md border-0 py-1.5 text-gray-900
+                  shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset
+                  focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="transport_type" class="block text-sm font-medium leading-6 text-gray-900">Transport Type
+              </label>
+              <div class="mt-2">
+                <input type="text" name="transport_type" value="<?php echo $tour['transport_type']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+
+            <div class="sm:col-span-2">
+              <label for="price" class="block text-sm font-medium leading-6 text-gray-900">Price </label>
+              <div class="mt-2">
+                <input type="text" name="price" value="<?php echo $tour['price']; ?>"
+                  class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+              </div>
+            </div>
+          </div>
+
         </div>
 
-
-
-        <div class="col">
-          <table>
-            <tr>
-              <fieldset>
-                <td><label for="email">Plan
-                    <?php echo " <font color='red'> * </font>"; ?>
-                  </label>
-                  <textarea id="text" name="plan" rows="6" cols="40" autocomplete="email" required></textarea>
-                </td>
-              </fieldset>
-            </tr>
-            <tr>
-              <fieldset>
-                <td> <label for="last-name">Departure Date
-                    <?php echo " <font color='red'> * </font>"; ?>
-                  </label>
-                  <input type="date" name="dep" autocomplete="family-name" id="co" required>
-                </td>
-              </fieldset>
-            </tr>
-            <tr>
-
-              <fieldset>
-                <td> <label for="street-address">Arrival Date
-                    <?php echo " <font color='red'> * </font>"; ?>
-                  </label>
-                  <input type="date" name="arrival" autocomplete="street-address" id="co" required>
-                </td>
-              </fieldset>
-            </tr>
-
-            <fieldset>
-              <td><label for="city">Hotel
-                  <?php echo " <font color='red'> * </font>"; ?>
-                </label>
-                <input type="text" name="hotel" autocomplete="address-level2" required>
-              </td>
-            </fieldset>
-          </table>
-
+        <div class="w-full mt-6 flex items-center justify-center gap-x-6">
+          <button type="button" class="w-full text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+          <button type="submit" name="submit"
+            class="w-full rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
         </div>
-      </div>
-
-
-
-
-      <div id="button">
-        <fieldset>
-          <button type="reset" id="contact-submit" class="can">Cancel</button>
-          <button type="submit" name="submit" id="contact-submit">Save</button>
-        </fieldset>
-      </div>
-
     </form>
-  </div>
 
 
 </body>

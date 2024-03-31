@@ -2,12 +2,10 @@
 // Start the session
 session_start();
 require 'config/connect.php';
-
+$user = $_SESSION['USER']['user_type'] ?? null;
 // check if already logged in
-if (isset($_SESSION['USER'])) {
-    if (isset($_SESSION['USER']['id'])) {
-        header("Location: /travago/home");
-    }
+if (isset($user)) {
+    header("Location: /travago/home");
 } else {
 
     // checks if the server request is sent
@@ -21,9 +19,24 @@ if (isset($_SESSION['USER'])) {
             try {
                 $email = $_POST['email'];
                 $pass = $_POST['password'];
+                $sql = "SELECT 
+                u.id AS user_id,
+                u.username,
+                u.email AS user_email,
+                u.address AS user_address,
+                u.phone AS user_phone,
+                u.password,
+                u.isVerified,
+                u.user_type,
+                c.id AS company_id,
+                c.name AS company_name
+                FROM 
+                    users u
+                INNER JOIN 
+                    companies c ON u.company_id = c.id
+                WHERE 
+                    u.email = :email";
 
-                //search for user by email
-                $sql = "SELECT * from users WHERE email=:email";
                 $stmt = $pdo->prepare($sql);
                 $stmt->bindValue(':email', $email);
                 $stmt->execute();
@@ -33,6 +46,7 @@ if (isset($_SESSION['USER'])) {
                     $verifyPassword = password_verify($pass, $userExists['password']);
                     if ($verifyPassword) {
                         // redirect to concerned page
+                        $_SESSION['USER'] = $userExists;
                         switch ($userExists['user_type']) {
                             case 'user':
                                 // if customer redirect to trips
@@ -50,7 +64,6 @@ if (isset($_SESSION['USER'])) {
                                 echo '<script>window.location.replace("/travago/home")</script>';
                                 break;
                         }
-                        $_SESSION['USER'] = $userExists;
                     } else {
                         // password false
                         $error = "Invalid credentials";

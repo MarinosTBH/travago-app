@@ -24,7 +24,7 @@ try {
     echo "connection failed: " . $e->getMessage();
 }
 
-// GET DATA FROM TRIPS
+////////////////////////////// GET DATA FROM TRIPS
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
     if (empty($search)) {
@@ -40,17 +40,15 @@ if (isset($_GET['search'])) {
     $result = $pdo->query($sql);
     $trips = $result->fetchAll();
 }
-
-// Close connection
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
-    <link rel="stylesheet" href="styles/output.css">
+    <link rel="stylesheet" href="/travago/styles/output.css">
     <title>List of trips</title>
 
 </head>
@@ -76,20 +74,21 @@ if (isset($_GET['search'])) {
                 <!-- Search -->
                 <div class="p-2 w-full flex justify-between">
                     <form method="GET" action="/travago/agency/trips">
-                        <div class='flex items-center justify-center'>
-                            <input type="text" class="w-1/3 p-2 border border-gray-300 rounded-md" name="search"
-                                value="<?php echo $_GET['search'] ?? ''; ?>" placeholder="Search by Id, Destination">
+                        <div class='flex flex-wrap gap-2 items-center'>
+                            <input type="text" class="w-32 lg:w-auto p-2 border border-gray-300 rounded-md" name="search"
+                                value="<?php echo $_GET['search'] ?? ''; ?>" placeholder="Search by Id">
                             <?php
                             if (isset($_GET['search'])) {
-                                echo "<p class='text-green-500 text-sm'>Showing results for: <span class='text-sm text-green-500'>Id: {$_GET['search']}</span></p>
-                                    <button
-                                    class='rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
-                                    ><a href='/travago/agency/trips'>Clear</a>
-                                </button>"
-                                ;
+                                echo "<a href='/travago/agency/trips'
+                                        class='rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
+                                        >Clear</a>";
+                                if (!empty($_GET['search'])) {
+                                    echo "<p class='text-green-500 text-sm'>Showing results for: <span class='text-sm text-green-500'>Id: {$_GET['search']}</span></p>";
+
+                                }
                             } else {
                                 echo "<button type='submit'
-                            class='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+                            class='hidden lg:block rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
                             Search</button>";
                             }
                             if ($errorSearch) {

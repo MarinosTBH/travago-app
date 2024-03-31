@@ -117,7 +117,7 @@ if ($routeMatch !== null) {
 } else {
     // Handle 404
     http_response_code(404);
-    require $viewDir . '404.php';
+    require $viewDir . '/404.php';
 }
 ?>
 <!DOCTYPE html>

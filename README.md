@@ -1,19 +1,3 @@
-Requirments:
-1. create a dotenv file ".env"
-  MYSQL_HOST=192.168.0.1
-  MYSQL_DATABASE=travago
-  MYSQL_USER=root
-  MYSQL_PASSWORD=root
-  MYSQL_ROOT_PASSWORD=root
-
-2. Serve the project
-
-3. If using tailwind local package : 
-  1. npm install -D tailwindcss\nnpx tailwindcss init
-  2. npx tailwindcss -i ./styles/input.css -o ./styles/output.css --watch
-
-
-
 # Travago - Travel Agencies Management App
 
 Travago is a comprehensive web application designed to streamline the management processes for travel agencies. It offers a user-friendly interface for managing bookings, customer information, and more. This README provides an overview of the project structure, installation instructions, and key functionalities.
@@ -27,7 +11,7 @@ Travago is a comprehensive web application designed to streamline the management
 ## Technologies Used
 
 - **Frontend**:
-  - HTML/CSS: Tailwind CSS and SASS for styling the user interface.
+  - HTML/CSS: **Tailwind** CSS and SASS for styling the user interface.
   - JavaScript: Handling client-side interactions.
 - **Backend**:
   - PHP: Server-side scripting language.
