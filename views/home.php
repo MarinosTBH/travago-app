@@ -1,9 +1,7 @@
 <?php
 // Start the session
 session_start();
-define('BASEPATH', true);
 require 'config/connect.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -12,8 +10,9 @@ require 'config/connect.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
-    <link rel="shortcut icon" href="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" type="image/x-icon"/>
+    <link href="styles/output.css" rel="stylesheet">
+    <link rel="shortcut icon" href="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+        type="image/x-icon" />
     <title>TravaGo</title>
 </head>
 
@@ -25,7 +24,7 @@ require 'config/connect.php';
             <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
                 <!-- Logo -->
                 <div class="flex lg:flex-1">
-                    <a href="/home" class="-m-1.5 p-1.5 flex  
+                    <a href="/travago/home" class="-m-1.5 p-1.5 flex  
                     ">
                         <span class="sr-only">Your Agency</span>
                         <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -33,7 +32,7 @@ require 'config/connect.php';
                         <!-- if user is connected, show profile link else show nothing-->
                         <!-- Company name -->
                         <?php
-                        if (isset ($_SESSION['USER']['username'])) {
+                        if (isset($_SESSION['USER']) && isset($_SESSION['USER']['id'])) {
                             $companyId = $_SESSION['USER']['company_id'];
                             // get company name
                             $sql = "SELECT * from companies WHERE id=:id";
@@ -43,10 +42,24 @@ require 'config/connect.php';
                             $company = $stmt->fetch(PDO::FETCH_ASSOC);
                             $companyName = $company['name'];
 
-                            echo ("<a href='/agency'
+                            if ($_SESSION['USER']['user_type'] !== 'user') {
+                                echo ("<a href='/travago/agency'
+                                style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
+                                >$companyName
+                                </a>");
+                            } else if (isset($_SESSION['USER']['username'])) {
+                                echo ("<a href='/travago/trips'
+                                style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
+                                >$companyName
+                                </a>");
+                            }
+
+                        } else {
+                            echo ("<a href='/travago/home'
                             style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
-                            >$companyName
+                            >TravaGo
                             </a>");
+
                         }
                         ?>
 
@@ -66,15 +79,20 @@ require 'config/connect.php';
                     </button>
                 </div>
                 <div class="hidden lg:flex lg:gap-x-12">
-                    <a href="trips" class="text-sm font-semibold leading-6 text-gray-900">Trips</a>
-                    <a href="agency" class="text-sm font-semibold leading-6 text-gray-900">Agency</a>
-                    <a href="about" class="text-sm font-semibold leading-6 text-gray-900">About us</a>
+                    <a href="/travago/trips" class="text-sm font-semibold leading-6 text-gray-900">Trips</a>
+                    <?php
+                    if (isset($_SESSION['USER']) && $_SESSION['USER']['user_type'] !== 'user') {
+
+                        echo "<a href='/travago/agency' class='text-sm font-semibold leading-6 text-gray-900'>Agency</a>";
+                    }
+                    ?>
+                    <a href="/travago/about" class="text-sm font-semibold leading-6 text-gray-900">About us</a>
                 </div>
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                     <?php
                     $username = $_SESSION['USER']['username'];
-                    if (isset ($_SESSION['USER']['username'])) {
-                        echo ("<a href='/profile' 
+                    if (isset($_SESSION['USER']['username'])) {
+                        echo ("<a href='/travago/profile' 
                                     style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
                                     >Connected as $username
                                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'>
@@ -82,13 +100,13 @@ require 'config/connect.php';
                                     </svg>
                                     </a>");
                         //disconnect button
-                        echo ("<a href='config/logout.php' class='mx-3 block rounded-lg px-2 py-2 text-base font-semibold leading-7 text-red-500'>
+                        echo ("<a href='/travago/utils/logout.php' class='mx-3 block rounded-lg px-2 py-2 text-base font-semibold leading-7 text-red-500'>
                                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'>
                                     <path stroke-linecap='round' stroke-linejoin='round' d='M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15' />
                                     </svg>
                                     </a>");
                     } else {
-                        echo ("<a href='/login' class='-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'>Log in</a>");
+                        echo ("<a href='/travago/login' class='-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'>Log in</a>");
                     }
                     ?>
                 </div>
@@ -101,7 +119,7 @@ require 'config/connect.php';
                 <div
                     class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                     <div class="flex items-center justify-between">
-                        <a href="#" class="-m-1.5 p-1.5">
+                        <a href="/travago" class="-m-1.5 p-1.5">
                             <span class="sr-only">Your Agency</span>
                             <img class="h-8 w-auto"
                                 src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
@@ -117,19 +135,21 @@ require 'config/connect.php';
                     <div class="mt-6 flow-root">
                         <div class="-my-6 divide-y divide-gray-500/10">
                             <div class="space-y-2 py-6">
-                                <a href="trips"
+                                <a href="/travago/trips"
                                     class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Trips</a>
-                                <a href="agency/index"
-                                    class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Agency</a>
-                                <a href="about"
+                                <?php
+                                if (isset($_SESSION['USER']) && $_SESSION['USER']['user_type'] !== 'user') {
+
+                                    echo "<a href='/travago/agency' class='-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'>Agency</a>";
+                                } ?> <a href="/travago/about"
                                     class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">About
                                     us</a>
                             </div>
                             <div class="py-6">
                                 <?php
                                 $username = $_SESSION['USER']['username'];
-                                if (isset ($_SESSION['USER']['username'])) {
-                                    echo ("<a href='/profile' 
+                                if (isset($_SESSION['USER']['username'])) {
+                                    echo ("<a href='/travago/profile' 
                                     style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
                                     >Connected as $username
                                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6'>
@@ -137,7 +157,7 @@ require 'config/connect.php';
                                     </svg>
                                     </a>");
                                 } else {
-                                    echo ("<a href='/login' class='-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'>Log in</a>");
+                                    echo ("<a href='/travago/login' class='-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50'>Log in</a>");
                                 }
                                 ?>
                             </div>
@@ -162,15 +182,16 @@ require 'config/connect.php';
                         Succeed</p>
                     <div class="mt-10 flex items-center justify-center gap-x-6">
                         <?php
-                        if (!isset ($_SESSION['USER']['username'])) {
-                            echo "<a href='/register/customer' 
+                        if (!isset($_SESSION['USER']['username'])) {
+                            echo "<a href='/travago/register/customer' 
                             class='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                             >Get started</a>";
                         } else {
-                            echo "<a href='/trips' 
-                            class='rounded-md px-2 py-2.5 text-2xl font-semibold text-indigo-600 shadow-sm 
+                            echo "<a href='/travago/trips' 
+                            class='rounded-md px-2 py-2.5 text-2xl font-semibold text-indigo-700 shadow-sm 
                             hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 
-'                            >Reserve a Trip";
+'                            >Welcome to $companyName<br>
+                                Reserve a Trip";
                         }
                         ?>
 

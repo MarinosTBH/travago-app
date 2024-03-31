@@ -1,72 +1,137 @@
-<!-- Router -->
 <?php
 // This is the front controller for the application 
-$request = $_SERVER['REQUEST_URI'];
-$viewDir = '/views/';
-// start db config 
-switch ($request) {
-        // Home pages
-    case '/':
-        require __DIR__ . $viewDir . 'home.php';
-        break;
-    case '/home':
-        require __DIR__ . $viewDir . 'home.php';
-        break;
-    case '/about':
-        require __DIR__ . $viewDir . 'about.php';
-        break;
-    case '/admin':
-        require __DIR__ . $viewDir . 'admin.php';
-        break;
-    case '/trips':
-        require __DIR__ . $viewDir . 'trips.php';
-        break;
-    case '/profile':
-        require __DIR__ . $viewDir . 'profile.php';
-        break;
-        // Login and Register
-    case '/login':
-        require __DIR__ . $viewDir . 'login/index.php';
-        break;
-    case '/reset-password':
-        require __DIR__ . $viewDir . 'login/reset-password.php';
-        break;
-    case '/register':
-        require __DIR__ . $viewDir . 'register/agency.php';
-        break;
-    case '/register/agency':
-        require __DIR__ . $viewDir . 'register/agency.php';
-        break;
-    case '/register/customer':
-        require __DIR__ . $viewDir . 'register/customer.php';
-        break;
-        // Agency pages
-    case '/agency':
-        require __DIR__ . $viewDir . 'agency/index.php';
-        break;
-    case '/agency/vehicles':
-        require __DIR__ . $viewDir . 'agency/vehicles.php';
-        break;
-    case '/agency/circuits':
-        require __DIR__ . $viewDir . 'agency/circuits.php';
-        break;
-    case '/agency/customers':
-        require __DIR__ . $viewDir . 'agency/customers.php';
-        break;
-    case '/agency/trips':
-        require __DIR__ . $viewDir . 'agency/trips.php';
-        break;
-        
-    default:
-        http_response_code(404);
-        require __DIR__ . $viewDir . '404.php';
-        break;
+$request = strtok($_SERVER['REQUEST_URI'], '?'); // Remove query string from request URI
+$viewDir = 'views/';
+
+// Define routes with regular expressions to capture dynamic parts
+$routes = array(
+    '' => array(
+        'view' => 'home.php',
+        'pattern' => '/^\/travago\/?$/'
+    ),
+    '/travago/home' => array(
+        'view' => 'home.php',
+        'pattern' => '/^\/travago\/home$/'
+    ),
+    '/travago/about' => array(
+        'view' => 'about.php',
+        'pattern' => '/^\/travago\/about$/'
+    ),
+    '/travago/admin' => array(
+        'view' => 'admin.php',
+        'pattern' => '/^\/travago\/admin$/'
+    ),
+    '/travago/trips' => array(
+        'view' => 'trips.php',
+        'pattern' => '/^\/travago\/trips$/'
+    ),
+    '/travago/profile' => array(
+        'view' => 'profile.php',
+        'pattern' => '/^\/travago\/profile$/'
+    ),
+    '/travago/login' => array(
+        'view' => 'login/index.php',
+        'pattern' => '/^\/travago\/login$/'
+    ),
+    '/travago/reset-password' => array(
+        'view' => 'login/reset-password.php',
+        'pattern' => '/^\/travago\/reset-password$/'
+    ),
+    '/travago/register' => array(
+        'view' => 'register/agency.php',
+        'pattern' => '/^\/travago\/register$/'
+    ),
+    '/travago/register/agency' => array(
+        'view' => 'register/agency.php',
+        'pattern' => '/^\/travago\/register\/agency$/'
+    ),
+    '/travago/register/customer' => array(
+        'view' => 'register/customer.php',
+        'pattern' => '/^\/travago\/register\/customer$/'
+    ),
+    '/travago/agency' => array(
+        'view' => 'agency/index.php',
+        'pattern' => '/^\/travago\/agency$/'
+    ),
+    '/travago/agency/trips' => array(
+        'view' => 'agency/trips/index.php',
+        'pattern' => '/^\/travago\/agency\/trips$/'
+    ),
+    '/travago/agency/trips/add-trip' => array(
+        'view' => 'agency/trips/add-trip.php',
+        'pattern' => '/^\/travago\/agency\/trips\/add-trip$/'
+    ),
+    '/travago/agency/trips/edit-trip' => array(
+        'view' => 'agency/trips/edit-trip.php',
+        'pattern' => '/^\/travago\/agency\/trips\/edit-trip(\?tripId=\d+)?$/'
+    ),
+    '/travago/agency/circuits' => array(
+        'view' => 'agency/circuits/index.php',
+        'pattern' => '/^\/travago\/agency\/circuits$/'
+    ),
+    '/travago/agency/circuits/add-circuit' => array(
+        'view' => 'agency/circuits/add-circuit.php',
+        'pattern' => '/^\/travago\/agency\/circuits\/add-circuit$/'
+    ),
+    '/travago/agency/circuits/edit-circuit' => array(
+        'view' => 'agency/circuits/edit-circuit.php',
+        'pattern' => '/^\/travago\/agency\/circuits\/edit-circuit(\?circuitId=\d+)?$/'
+    ),
+    '/travago/agency/vehicles' => array(
+        'view' => 'agency/vehicles/index.php',
+        'pattern' => '/^\/travago\/agency\/vehicles$/'
+    ),
+    '/travago/agency/vehicles/add-vehicle' => array(
+        'view' => 'agency/vehicles/add-vehicle.php',
+        'pattern' => '/^\/travago\/agency\/vehicles\/add-vehicle$/'
+    ),
+    '/travago/agency/vehicles/edit-vehicle' => array(
+        'view' => 'agency/vehicles/edit-vehicle.php',
+        'pattern' => '/^\/travago\/agency\/vehicles\/edit-vehicle(\?vehicleId=\d+)?$/'
+    ),
+    '/travago/agency/customers' => array(
+        'view' => 'agency/customers.php',
+        'pattern' => '/^\/travago\/agency\/customers$/'
+    ),
+    // Add more routes as needed...
+);
+
+
+// Function to match the request URI against defined routes
+function matchRoute($request, $routes)
+{
+    foreach ($routes as $route => $details) {
+        if (preg_match($details['pattern'], $request, $matches)) {
+            return array('view' => $details['view'], 'matches' => $matches);
+        }
+    }
+    return null;
+}
+
+// Match the request URI to a route
+$routeMatch = matchRoute($request, $routes);
+
+if ($routeMatch !== null) {
+    $view = $routeMatch['view'];
+    require $viewDir . $view;
+} else {
+    // Handle 404
+    http_response_code(404);
+    require $viewDir . '404.php';
 }
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
+
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/public/favicon.svg" type="image/x-icon"/>
+    <link rel="shortcut icon" href="/travago/public/favicon.svg" type="image/x-icon" />
     <title>Travago</title>
+</head>
+
+<body>
+    <!-- Your HTML content here -->
+</body>
+
 </html>

@@ -1,15 +1,21 @@
+<?php
+require 'config/auth.php';
+?>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
     <title>List of trips</title>
 </head>
 
 <body>
 
     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+            En cours de développement
+        </h1>
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>

@@ -1,14 +1,11 @@
 <?php
 session_start();
-define('BASEPATH', true);
 require 'config/connect.php';
-require 'agency/menu-bar.php';
-// Check if the user is logged in
-if (!isset($_SESSION['USER']['id'])) {
-    header("Location: /login");
-    exit;
-}
+require 'config/auth.php';
 
+if ($_SESSION['USER']['user_type'] != 'user') {
+    require 'utils/menu-bar.php';
+}
 // Get the user ID from the session
 $userId = $_SESSION['USER']['id'];
 
@@ -69,13 +66,28 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
     <title>My profile</title>
 </head>
 
 <body>
-    <div class="flex flex-row items-center justify-center px-6 w-full">
-        <form action="/profile" method="POST">
+    <header class="bg-white shadow">
+        <div class="flex mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-x-4">
+            <a href="/travago/home" class="text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-8 h-8 text-gray">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+            </a>
+            <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+               My profile
+            </h1>
+        </div>
+    </header>
+    <div class="flex flex-row items-center justify-center px-6 w-full my-2">
+
+        <form action="/travago/profile" method="POST">
             <!-- <div class="space-y-2 lg:w-1/2 mx-auto"> -->
             <div class="space-y-12">
                 <div class="border-b border-gray-900/10 pb-4">
@@ -187,7 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="sm:col-span-6 w-full mt-6 flex items-center justify-center gap-x-6">
                             <button type="button"
                                 class="w-full text-sm font-semibold leading-6 text-gray-900 px-3 py-2">
-                                <a href="/home">
+                                <a href="/travago/home">
                                     Cancel
                                 </a>
                             </button>

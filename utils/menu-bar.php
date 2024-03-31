@@ -1,5 +1,13 @@
 <?php
+session_start();
+$user = $_SESSION['USER'];
+$role = $user['user_type'];
+$name = $user['username'];
+$email = $user['email'];
 
+$path = $_SERVER['REQUEST_URI'];
+$title = basename($path);
+$title = ucfirst($title);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -7,12 +15,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="/travago/styles/output.css" rel="stylesheet">
     <title>
         <?php
-        $path = $_SERVER['PHP_SELF'];
-        $title = basename($path);
-        $title = ucfirst($title);
+
         echo $title;
         ?>
     </title>
@@ -25,7 +31,7 @@
                 <div class="flex h-16 items-center justify-between">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
-                            <a href="/home">
+                            <a href="/travago/home">
                                 <img class="h-8 w-8"
                                     src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
                                     alt="Your Company">
@@ -35,11 +41,11 @@
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <?php
                                 $menu = [
-                                    "Dashboard" => "/agency",
-                                    "Trips" => "/agency/trips",
-                                    "Circuits" => "/agency/circuits",
-                                    "Vehicles" => "/agency/vehicles",
-                                    "Customers" => "/agency/customers"
+                                    "Dashboard" => "/travago/agency",
+                                    "Trips" => "/travago/agency/trips",
+                                    "Circuits" => "/travago/agency/circuits",
+                                    "Vehicles" => "/travago/agency/vehicles",
+                                    "Customers" => "/travago/agency/customers"
                                 ];
                                 foreach ($menu as $key => $value) {
                                     $active = ($title == $key) || $title == 'Agency' && $key == "Dashboard" ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white";
@@ -49,8 +55,16 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Desktop menu -->
                     <div class="hidden md:block">
                         <div class="ml-4 flex items-center md:ml-6">
+                            <div>
+                                <p class="text-white">
+                                    <?php
+                                    echo $role;
+                                    ?>
+                                </p>
+                            </div>
                             <!-- Profile dropdown -->
                             <div class="relative ml-3">
                                 <div>
@@ -65,30 +79,23 @@
                                     </button>
                                 </div>
 
-                                <!--
-                Dropdown menu, show/hide based on menu state.
-
-                Entering: "transition ease-out duration-100"
-                  From: "transform opacity-0 scale-95"
-                  To: "transform opacity-100 scale-100"
-                Leaving: "transition ease-in duration-75"
-                  From: "transform opacity-100 scale-100"
-                  To: "transform opacity-0 scale-95"
-              -->
                                 <div id="travago-dropdown-menu"
                                     class=" hidden absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                     tabindex="-1">
                                     <!-- Active: "bg-gray-100", Not Active: "" -->
-                                    <a href="profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
-                                        tabindex="-1" id="user-menu-item-0">Your Profile</a>
-                                    <a href="/config/logout.php" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
-                                        tabindex="-1" id="user-menu-item-2">Sign out</a>
+                                    <a href="/travago/profile" class="block px-4 py-2 text-sm text-gray-700"
+                                        role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                                    <a href="/travago/utils/logout.php" class="block px-4 py-2 text-sm text-gray-700"
+                                        role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="-mr-2 flex md:hidden">
+                    <div class="-mr-2 flex items-center space-x-4 md:hidden">
+                        <?php
+                        echo "<p class='text-white'>$role</p>";
+                        ?>
                         <!-- Mobile menu button -->
                         <button type="button" onclick='toggleMenu()'
                             class="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -140,11 +147,6 @@
                                 echo $email;
                                 ?>
                             </div>
-                            <div class="text-sm font-medium leading-none text-gray-400">
-                                <?php
-                                echo $role;
-                                ?>
-                            </div>
                         </div>
                     </div>
                     <div class="mt-3 space-y-1 px-2">
@@ -158,26 +160,7 @@
                 </div>
             </div>
         </nav>
-
-        <header class="bg-white shadow">
-            
-            <div class="flex mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 space-x-4">
-            <a href="/home" class="text-gray-800">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-8 h-8 text-gray">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-            </a>
-                <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-                    <?php echo $title == "Agency" ? "Dashboard" : $title; ?>
-                </h1>
-            </div>
-        </header>
         <main>
-            <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-                <!-- Your content -->
-            </div>
         </main>
     </div>
     <script>

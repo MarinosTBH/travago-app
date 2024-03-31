@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="/styles/output.css" rel="stylesheet">
+  <link href="styles/output.css" rel="stylesheet">
   <title>About us</title>
 </head>
 
@@ -19,7 +19,7 @@
     </div>
     <!-- Main -->
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <a href="/home">
+      <a href="/travago/home">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-white">
           <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
         </svg>

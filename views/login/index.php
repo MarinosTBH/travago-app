@@ -1,19 +1,21 @@
 <?php
 // Start the session
 session_start();
-define('BASEPATH', true);
 require 'config/connect.php';
 
 // check if already logged in
-if (isset($_SESSION['USER']['id'])) {
-    header("Location: /home");
+if (isset($_SESSION['USER'])) {
+    if (isset($_SESSION['USER']['id'])) {
+        header("Location: /travago/home");
+    }
 } else {
 
     // checks if the server request is sent
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
+        $error = "";
         // if no credentials
         if (empty($_POST['email']) || empty($_POST['password'])) {
-            echo "<p class='absolute w-full mx-auto text-center text-red-500'>Please provide your credentials</p>";
+            $error = "Please provide your credentials!";
         } else {
             // read credentials and check it in database
             try {
@@ -32,29 +34,29 @@ if (isset($_SESSION['USER']['id'])) {
                     if ($verifyPassword) {
                         // redirect to concerned page
                         switch ($userExists['user_type']) {
-                            case 'customer':
+                            case 'user':
                                 // if customer redirect to trips
-                                echo '<script>window.location.replace("/trips")</script>';
+                                echo '<script>window.location.replace("/travago/trips")</script>';
                                 break;
                             case 'admin':
                                 // if admin redirect to admin panel
-                                echo '<script>window.location.replace("/agency")</script>';
+                                echo '<script>window.location.replace("/travago/agency")</script>';
                                 break;
                             case 'agency':
                                 // if agency redirect to dashboard
-                                echo '<script>window.location.replace("/agency")</script>';
+                                echo '<script>window.location.replace("/travago/agency")</script>';
                                 break;
                             default:
-                                echo '<script>window.location.replace("/home")</script>';
+                                echo '<script>window.location.replace("/travago/home")</script>';
                                 break;
                         }
                         $_SESSION['USER'] = $userExists;
                     } else {
                         // password false
-                        echo "<p class='absolute w-full mx-auto text-center text-red-500'>Invalid credentials</p>";
+                        $error = "Invalid credentials";
                     }
                 } else {
-                    echo "<p class='absolute w-full mx-auto text-center text-red-500'>Email dosen't exist</p>";
+                    $error = "Email dosen't exist";
                 }
             } catch (PDOException $e) {
                 $error = "Error: " . $e->getMessage();
@@ -71,18 +73,24 @@ if (isset($_SESSION['USER']['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
     <title>Login</title>
+    <style>
+        .background {
+            height: 100vh;
+            background: url('https://tailwindui.com/img/ecommerce-images/category-page-01-image-card-02.jpg') no-repeat;
+            background-size: 100% 100%;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="flex h-full">
-        <div class="hidden lg:flex">
-            <img src="/public/registration.avif" alt="Your Company">
+    <div class="flex h-full relative">
+        <div class="hidden lg:flex w-full background">
         </div>
         <div class="w-full flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
-        <?php
-            if ($_SERVER['HTTP_REFERER'] == 'http://localhost:3000/home') {
+            <?php
+            if (($_SERVER['HTTP_REFERER'] == 'http://localhost/travago/') || ($_SERVER['HTTP_REFERER'] == 'http://localhost/travago/home')) {
                 echo "<p class='w-full text-center' style='color:green;font-weight:bold;'>You must login first</p>";
             } ?>
             <!-- Image and title -->
@@ -94,8 +102,12 @@ if (isset($_SESSION['USER']['id'])) {
             </div>
             <!-- Form -->
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+                <?php
+                if ($error) {
+                    echo "<p class='w-full mx-auto text-center text-red-500'>$error</p>";
+                } ?>
 
-                <form class="space-y-6" action="/login" method="POST">
+                <form class="space-y-6" action="/travago/login" method="POST">
                     <div>
                         <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email
                             address</label>
@@ -110,7 +122,7 @@ if (isset($_SESSION['USER']['id'])) {
                             <label for="password"
                                 class="block text-sm font-medium leading-6 text-gray-900">Password</label>
                             <div class="text-sm">
-                                <a href="/reset-password"
+                                <a href="/travago/reset-password"
                                     class="font-semibold text-indigo-600 hover:text-indigo-500">Forgot
                                     password?</a>
                             </div>
@@ -130,7 +142,8 @@ if (isset($_SESSION['USER']['id'])) {
 
                 <p class="mt-10 text-center text-sm text-gray-500">
                     Not a member?
-                    <a href="/register/agency" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                    <a href="/travago/register/agency"
+                        class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                         Register</a>
                 </p>
             </div>

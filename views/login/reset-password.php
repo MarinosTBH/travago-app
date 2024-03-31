@@ -1,7 +1,6 @@
 <?php
 // Start the session
 session_start();
-define('BASEPATH', true);
 require 'config/connect.php';
 
 // check if already logged in
@@ -12,8 +11,10 @@ if (isset($_SESSION['USER']['id'])) {
     // checks if the server request is sent
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // if no credentials
+        $error = "";
+        $success = "";
         if (empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm_password'])) {
-            echo "<p class='absolute w-full mx-auto text-center text-red-500'>Please provide your credentials</p>";
+            $error = "Please provide your credentials";
         } else {
             // read credentials and check it in database
             try {
@@ -37,13 +38,13 @@ if (isset($_SESSION['USER']['id'])) {
                         $stmt->bindValue(':email', $email);
                         $stmt->execute();
 
-                        echo "<p class='absolute w-full mx-auto text-center text-green-500'>Password updated successfully</p>";
+                        $success = "Password updated successfully";
                     } else {
                         // password false
-                        echo "<p class='absolute w-full mx-auto text-center text-red-500'>Password does not match</p>";
+                        $error = "Password does not match";
                     }
                 } else {
-                    echo "<p class='absolute w-full mx-auto text-center text-red-500'>Email dosen't exist</p>";
+                    $error = "Email dosen't exist</p>";
                 }
             } catch (PDOException $e) {
                 $error = "Error: " . $e->getMessage();
@@ -60,16 +61,23 @@ if (isset($_SESSION['USER']['id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
+    <style>
+        .background {
+            height: 100vh;
+            background-image: url('https://tailwindui.com/img/ecommerce-images/category-page-01-image-card-01.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
     <title>Login</title>
 </head>
 
 <body>
-    <div class="flex h-full">
-        <div class="hidden lg:flex">
-            <img src="/public/registration.avif" alt="Your Company">
+    <div class="flex justify-start h-full max-h-full">
+        <div class="hidden lg:flex w-full background">
         </div>
-        <div class="w-full flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
+        <div class="flex flex-col items-center justify-center w-full min-h-full px-6 py-12 lg:px-8">
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                     alt="Your Company">
@@ -78,7 +86,18 @@ if (isset($_SESSION['USER']['id'])) {
             </div>
 
             <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-                <form class="space-y-6" action="/reset-password" method="POST">
+                <?php if ($error) { ?>
+                    <p class="text-red-500 text-center">
+                        <?php echo $error; ?>
+                    </p>
+                <?php } ?>
+                <?php if ($success) { ?>
+                    <p class="text-green-500 text-center">
+                        <?php echo $success; ?>
+                    </p>
+                <?php } ?>
+
+                <form class="space-y-6" action="/travago/reset-password" method="POST">
 
                     <div>
                         <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email
@@ -118,7 +137,8 @@ if (isset($_SESSION['USER']['id'])) {
 
                     <div>
                         <button type="submit"
-                            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save password</button>
+                            class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save
+                            password</button>
                     </div>
                 </form>
             </div>

@@ -7,8 +7,9 @@
 // Start the session
 session_start();
 
+$userType = $_SESSION['USER']['user_type'] ?? null;
 // Define routes based on user roles
-switch ($_SESSION['USER']['user_type']) {
+switch ($userType) {
     case 'admin':
         // Admin can visit all pages
         // No need to perform any checks
@@ -25,25 +26,25 @@ switch ($_SESSION['USER']['user_type']) {
             '/profile',
         ];
         break;
-    case 'customer':
+    case 'user':
         // Customer can only visit trips
         $allowedPages = [
-            '/home',
-            '/trips',
-            '/profile',
+            'home',
+            'trips',
+            'profile',
         ];
         break;
     default:
         // Redirect to a default page or show an error message
-        header("Location: /login");
+        header("Location: /travago/login");
         exit;
 }
 
 // Check if the current page is allowed for the user's role
-$currentPage = basename($_SERVER['PHP_SELF']);
-if (!in_array($currentPage, $allowedPages ?? []) && $_SESSION['USER']['user_type'] == 'customer') {
+$currentPage = basename($_SERVER['REQUEST_URI']);
+if (!in_array($currentPage, $allowedPages ?? []) && $userType == 'user') {
     // Page is not allowed for the user's role
     // Redirect to a default page or show an error message
-    header("Location: unauthorized.php");
+    header("Location: 404.php");
     exit;
 }
