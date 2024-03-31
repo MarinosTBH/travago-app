@@ -17,9 +17,9 @@ if (isset($_POST['submit'])) {
   $h = @$_POST['hotel'];
   $user = $_SESSION['USER'];
 
-  // if (is_numeric($_POST['desti']) || is_numeric($_POST['flight']) == FALSE || is_numeric($_POST['seats']) == FALSE || is_numeric($_POST['plan']) || is_numeric($_POST['hotel'])) {
-  if (empty($d) && empty($f) && empty($s) && empty($p) && empty($de) && empty($a) && empty($h)) {
-    $o = "Atleast change one field!";
+  if (is_numeric($_POST['desti']) || is_numeric($_POST['flight']) == FALSE || is_numeric($_POST['seats']) == FALSE || is_numeric($_POST['plan']) || is_numeric($_POST['hotel'])) {
+  // if (empty($d) && empty($f) && empty($s) && empty($p) && empty($de) && empty($a) && empty($h)) {
+    $o = "Check the fields!";
   } else {
     try {
       $q = $pdo->prepare("UPDATE trips SET Destination = :desti, Flight_number = :flight, Number_of_seats = :seats, Plan = :plan, Departure_date = :dep, Arrival_date = :arrival, Hotel = :hotel WHERE Id = :id");
@@ -35,13 +35,13 @@ if (isset($_POST['submit'])) {
       $q->execute();
 
       echo "<script>alert('Trip modified successfully!')</script>";
+      $el = "Trip modified successfully!";
       // echo "<script>window.location.replace('/travago/agency/trips')</script>";
     } catch (PDOException $e) {
       echo "Error: " . $e->getMessage();
     }
 
 
-    $el = "Trip modified successfully!";
   }
 }
 

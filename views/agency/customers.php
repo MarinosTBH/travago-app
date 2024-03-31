@@ -52,7 +52,7 @@ if (isset($_GET['search'])) {
     if ($user['user_type'] == "admin") {
       try {
         /////////////////////////////// get all users as admin 
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE id LIKE '%$search%' user_type != 'admin'");
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE id LIKE '%$search%' AND username != '%travago%'");
         $stmt->execute();
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
       } catch (PDOException $e) {
