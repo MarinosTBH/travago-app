@@ -1,11 +1,11 @@
 <?php
-session_start();
 require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
 
 $user = $_SESSION['USER'];
 $company_id = $user['company_id'];
+$errorSearch = "";
 
 ////////////////////////////// ACTIVATE OR NOT 
 try {
@@ -47,12 +47,21 @@ if (isset($_GET['search'])) {
     $search = $_GET['search'];
     if (empty($search)) {
         $errorSearch = "Please enter a keyword to search";
+    } else if ($user['user_type'] == 'admin') {
+        // search by any keyword
+        $sql = "SELECT * FROM vehicles WHERE Id LIKE '%$search%'";
+        $result = $pdo->query($sql);
+        $vehicles = $result->fetchAll();
     } else {
         // search by any keyword
         $sql = "SELECT * FROM vehicles WHERE Id LIKE '%$search%' AND company_id = $company_id";
         $result = $pdo->query($sql);
         $vehicles = $result->fetchAll();
     }
+} else if ($user['user_type'] == 'admin') {
+    $sql = "SELECT * FROM vehicles";
+    $result = $pdo->query($sql);
+    $vehicles = $result->fetchAll();
 } else {
     $sql = "SELECT * FROM vehicles where company_id = $company_id";
     $result = $pdo->query($sql);
@@ -168,6 +177,19 @@ if (isset($_GET['search'])) {
                             $created_at = $vehicle['created_at'];
                             $company_id = $vehicle['company_id'];
 
+                            $changeAvailabilityAction = $company_id == $user['company_id'] ?
+                                "<form method='POST' action='/agency/vehicles'> <!-- change to ur file name -->
+                                <input type='hidden' name='availability_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
+                                <button class='btn' name='availability_form' id='yesButton' style='color:blue;'>Change Availability</button>
+                                </button>
+                            </form>" : "";
+                            $editAction = $company_id == $user['company_id'] ?
+                                "<a href='/agency/vehicles/edit-vehicle?vehicleId=$id' style='color:green; name='edit'>Edit</a>" : "";
+                            $deleteAction = $company_id == $user['company_id'] ? "<form method='POST' action='/agency/vehicles'> <!-- change to ur file name -->
+                                <input type='hidden' name='delete_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
+                                <button class='btn' name='delete' id='yesButton' style='color:red;'>Delete</button>
+                                </button>
+                            </form>" : "";
 
                             echo " <tr
                                 class='odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'>
@@ -192,21 +214,13 @@ if (isset($_GET['search'])) {
                                     $availability
                                 </td>
                                 <td class='px-6 py-4'>
-                                <form method='POST' action='/agency/vehicles'> <!-- change to ur file name -->
-                                        <input type='hidden' name='availability_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
-                                        <button class='btn' name='availability_form' id='yesButton' style='color:blue;'>Change Availability</button>
-                                    </button>
-                                    </form>
+                                    $changeAvailabilityAction
                                 </td>
                                 <td class='px-6 py-4'>
-                                    <a href='/agency/vehicles/edit-vehicle?vehicleId=$id' style='color:green; name='edit'>Edit</a>
+                                    $editAction
                                 </td>
                                 <td class='px-6 py-4'>
-                                    <form method='POST' action='/agency/vehicles'> <!-- change to ur file name -->
-                                        <input type='hidden' name='delete_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
-                                        <button class='btn' name='delete' id='yesButton' style='color:red;'>Delete</button>
-                                        </button>
-                                    </form>
+                                    $deleteAction
                                 </td>
                             </tr>";
                         }

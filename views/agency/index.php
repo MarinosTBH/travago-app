@@ -1,5 +1,4 @@
 <?php
-session_start();
 require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
@@ -117,16 +116,36 @@ $role = $user['user_type'];
                     </dd>
 
                 </div>
-                <div class="mx-auto flex max-w-xs flex-col gap-y-4">
+                <div class="mx-auto flex max-w-xs flex-col gap-y-2">
                     <dt class="text-base leading-7 text-gray-600">Total trips</dt>
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            $sql = "SELECT COUNT(id) AS num FROM trips WHERE company_id = $company_id";
+                            if ($role == 'admin') {
+                                $sql = "SELECT * FROM trips";
+                            } else {
+                                $sql = "SELECT * FROM trips WHERE company_id = $company_id";
+                            }
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
-                            $tripCount = $stmt->fetch(PDO::FETCH_ASSOC);
-                            echo $tripCount['num'] . ' trips';
+                            $tripCount = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                            echo count($tripCount) . ' trips';
+                            // echo currently reserved trips and completed trips
+                            $completedTrips = 0;
+                            $reservedTrips = 0;
+                            foreach ($tripCount as $trip) {
+                                if ($trip['Arrival_date'] < date('Y-m-d') ){
+                                    $completedTrips++;
+                                } else if ($trip['Departure_date'] > date('Y-m-d')) {
+                                    $reservedTrips++;
+                                }
+                            }
+                            echo "<dt class='text-base leading-7 text-gray-600'>";
+                            echo  $reservedTrips . ' reserved trips';
+                            echo "</dt>";
+                            echo "<dt class='text-base leading-7 text-gray-600'>";
+                            echo $completedTrips . ' completed trips';
+                            echo "</dt>";
                         } catch (PDOException $e) {
                             echo "Error: " . $e->getMessage();
                         }
@@ -138,7 +157,11 @@ $role = $user['user_type'];
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            $sql = "SELECT COUNT(id) AS num FROM tours WHERE company_id = $company_id";
+                            if ($role == 'admin') {
+                                $sql = "SELECT COUNT(id) AS num FROM tours";
+                            } else {
+                                $sql = "SELECT COUNT(id) AS num FROM tours WHERE company_id = $company_id";
+                            }
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             $circuitCount = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -154,7 +177,11 @@ $role = $user['user_type'];
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            $sql = "SELECT * FROM vehicles WHERE company_id = $company_id";
+                            if ($role == 'admin') {
+                                $sql = "SELECT * FROM vehicles";
+                            } else {
+                                $sql = "SELECT * FROM vehicles WHERE company_id = $company_id";
+                            }
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);

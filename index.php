@@ -23,8 +23,12 @@ $routes = array(
         'pattern' => '/^\\/admin$/'
     ),
     '/trips' => array(
-        'view' => 'trips.php',
+        'view' => 'trips/index.php',
         'pattern' => '/^\\/trips$/'
+    ),
+    '/trips/booking' => array(
+        'view' => 'trips/booking.php',
+        'pattern' => '/^\\/trips\/booking(\?id=\d+)?$/'
     ),
     '/profile' => array(
         'view' => 'profile.php',
@@ -39,7 +43,7 @@ $routes = array(
         'pattern' => '/^\\/reset-password$/'
     ),
     '/register' => array(
-        'view' => 'register/agency.php',
+        'view' => 'register/index.php',
         'pattern' => '/^\\/register$/'
     ),
     '/register/agency' => array(

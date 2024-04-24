@@ -22,7 +22,7 @@ require 'config/connect.php';
         <img class="w-full h-full fixed opacity-[80%]" src="public/travago-cover.png" alt="banner">
         <header class="absolute inset-x-0 top-0 z-50">
             <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
-                <!-- Logo -->
+                <!-- Logo & Navbar --> 
                 <div class="flex lg:flex-1">
                     <a href="/home" class="-m-1.5 p-1.5 flex  
                     ">
@@ -79,7 +79,12 @@ require 'config/connect.php';
                     </button>
                 </div>
                 <div class="hidden lg:flex lg:gap-x-12">
-                    <a href="/trips" class="text-sm font-semibold leading-6 text-gray-900">Trips</a>
+                    <?php if (
+                        isset($_SESSION['USER']) && $_SESSION['USER']['user_type'] === 'user' ||
+                        !isset($_SESSION['USER'])
+                    ) {
+                        echo "<a href='/trips' class='text-sm font-semibold leading-6 text-gray-900'>Trips</a>";
+                    } ?>
                     <?php
                     if (isset($_SESSION['USER']) && $_SESSION['USER']['user_type'] !== 'user') {
 
@@ -91,7 +96,7 @@ require 'config/connect.php';
                 <div class="hidden lg:flex lg:flex-1 lg:justify-end">
                     <?php
                     if (isset($_SESSION['USER']) && isset($_SESSION['USER']['username'])) {
-                    $username = $_SESSION['USER']['username'];
+                        $username = $_SESSION['USER']['username'];
                         echo ("<a href='/profile' 
                                     style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
                                     >Connected as $username
@@ -149,7 +154,7 @@ require 'config/connect.php';
                             <div class="py-6">
                                 <?php
                                 if (isset($_SESSION['USER']['username'])) {
-                                $username = $_SESSION['USER']['username'];
+                                    $username = $_SESSION['USER']['username'];
                                     echo ("<a href='/profile' 
                                     style='color: #000668;font-weight: bold;display:flex;align-items:center;gap:0.5rem;'
                                     >Connected as $username
@@ -193,7 +198,7 @@ require 'config/connect.php';
                             echo "<a href='register/customer' 
                             class='rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                             >Get started</a>";
-                        } else {
+                        } else if ($_SESSION['USER']['user_type'] === 'user') {
                             echo "<a href='/trips' 
                             class='rounded-md px-2 py-2.5 text-2xl font-semibold text-indigo-700 shadow-sm 
                             hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 
@@ -229,4 +234,3 @@ require 'config/connect.php';
 </body>
 
 </html>
-

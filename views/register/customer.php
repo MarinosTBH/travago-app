@@ -1,9 +1,8 @@
 <?php
 session_start();
 require 'config/connect.php';
-
+$error = "";
 // check if already logged in
-echo $_SESSION['USER'];
 if (isset($_SESSION['USER']['id'])) {
     header("Location: /home");
 } else {

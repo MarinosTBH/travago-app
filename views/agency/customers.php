@@ -1,11 +1,11 @@
 <?php
-session_start();
 require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
 
 $user = $_SESSION['USER'];
 $company_id = $user['company_id'];
+$errorSearch = "";
 
 ////////////////////////////// ACTIVATE OR NOT 
 try {

@@ -3,14 +3,15 @@
 session_start();
 require 'config/connect.php';
 $user = $_SESSION['USER']['user_type'] ?? null;
+
 // check if already logged in
+$error = "";
 if (isset($user)) {
     header("Location: /home");
 } else {
 
     // checks if the server request is sent
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
-        $error = "";
         // if no credentials
         if (empty($_POST['email']) || empty($_POST['password'])) {
             $error = "Please provide your credentials!";
@@ -22,9 +23,9 @@ if (isset($user)) {
                 $sql = "SELECT 
                 u.id,
                 u.username,
-                u.email AS user_email,
-                u.address AS user_address,
-                u.phone AS user_phone,
+                u.email,
+                u.address,
+                u.phone,
                 u.password,
                 u.isVerified,
                 u.user_type,
@@ -86,7 +87,7 @@ if (isset($user)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
     <title>Login</title>
     <style>
         .background {
@@ -103,9 +104,11 @@ if (isset($user)) {
         </div>
         <div class="w-full flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
             <?php
-            if (($_SERVER['HTTP_REFERER'] == 'http://localhost/') || ($_SERVER['HTTP_REFERER'] == 'http://localhost/home')) {
-                echo "<p class='w-full text-center' style='color:green;font-weight:bold;'>You must login first</p>";
-            } ?>
+            if (isset($_SERVER['HTTP_REFERER'])){
+                if (($_SERVER['HTTP_REFERER'] == 'http://localhost/') || ($_SERVER['HTTP_REFERER'] == 'http://localhost/home')) {
+                    echo "<p class='w-full text-center' style='color:green;font-weight:bold;'>You must login first</p>";
+                } 
+            }?>
             <!-- Image and title -->
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"

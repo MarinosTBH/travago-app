@@ -3,12 +3,12 @@ session_start();
 require 'config/connect.php';
 
 // check if already logged in
+$error = "";
 if (isset($_SESSION['USER']) || isset($_SESSION['USER']['id'])) {
     header("Location: /home");
 } else {
 
     if (($_SERVER['REQUEST_METHOD'] == 'POST')) {
-        $error = "";
         if (empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password']) || empty($_POST['phone']) || empty($_POST['agencyName'])) {
             $error = "Please provide your credentials";
         } else {
@@ -26,13 +26,12 @@ if (isset($_SESSION['USER']) || isset($_SESSION['USER']['id'])) {
                 $pass = password_hash($pass, PASSWORD_BCRYPT, array("cost" => 12));
 
                 //Check if username exists
-                $sql = "SELECT COUNT(username) AS num FROM users WHERE email =      :email";
+                $sql = "SELECT COUNT(username) AS num FROM users WHERE email = :email";
                 $stmt = $pdo->prepare($sql);
 
                 $stmt->bindValue(':email', $email);
                 $stmt->execute();
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
                 if ($row['num'] > 0) {
                     $error = "Email already exists";
                 } else {
@@ -41,13 +40,6 @@ if (isset($_SESSION['USER']) || isset($_SESSION['USER']['id'])) {
                     VALUES (:name)");
                     $stmt->bindValue(':name', $agencyName);
                     $stmt->execute();
-                    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-                    if (
-                        $row['
-                    '] > 0
-                    ) {
-                        $error = "An error occurred while creating company. Please try again.";
-                    }
 
                     // create user and assign company
                     $stmt = $pdo->prepare("SELECT id FROM companies WHERE name = :name");
@@ -65,7 +57,7 @@ if (isset($_SESSION['USER']) || isset($_SESSION['USER']['id'])) {
                     $stmt->bindParam(':user_type', $user_type);
                     $stmt->bindParam(':company_id', $company_id);
 
-                    $stmt->execute();
+                    $stmt->execute(); 
                     echo '<script>alert("New account created.")</script>';
                     echo '<script>window.location.replace("/login")</script>';
                 }

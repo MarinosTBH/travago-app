@@ -1,10 +1,11 @@
 <?php
-// require 'config/auth.php';
+require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
 
 // Get the trip id from the URL
 $id = $_GET['tripId'];
+$user = $_SESSION['USER'];
 
 if (isset($_POST['submit'])) {
   //recuperation 
@@ -15,7 +16,6 @@ if (isset($_POST['submit'])) {
   $de = @$_POST['dep'];
   $a = @$_POST['arrival'];
   $h = @$_POST['hotel'];
-  $user = $_SESSION['USER'];
 
   if (is_numeric($_POST['desti']) || is_numeric($_POST['flight']) == FALSE || is_numeric($_POST['seats']) == FALSE || is_numeric($_POST['plan']) || is_numeric($_POST['hotel'])) {
   // if (empty($d) && empty($f) && empty($s) && empty($p) && empty($de) && empty($a) && empty($h)) {
@@ -62,8 +62,7 @@ try {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--<script src="https://cdn.tailwindcss.com"></script>-->
-  <!-- <link rel="stylesheet" href="styles/output.css"> -->
+  <link rel="stylesheet" href="/styles/output.css">
   <title>Edit trips</title>
   <style>
     * {

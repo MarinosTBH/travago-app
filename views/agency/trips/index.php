@@ -1,12 +1,11 @@
 <?php
-session_start();
 require 'config/auth.php';
 require 'config/connect.php';
 require 'utils/menu-bar.php';
 
 $user = $_SESSION['USER'];
 $company_id = $user['company_id'];
-
+$errorSearch = '';
 ////////////////////////////// DELETE 
 try {
     // Check if ID is set and valid
@@ -29,12 +28,21 @@ if (isset($_GET['search'])) {
     $search = $_GET['search'];
     if (empty($search)) {
         $errorSearch = "Please enter a keyword to search";
+    } else if ($user['user_type'] == 'admin') {
+        // search by any keyword
+        $sql = "SELECT * FROM trips WHERE Id LIKE '%$search%'";
+        $result = $pdo->query($sql);
+        $trips = $result->fetchAll();
     } else {
         // search by any keyword
         $sql = "SELECT * FROM trips WHERE Id LIKE '%$search%' AND company_id = $company_id";
         $result = $pdo->query($sql);
         $trips = $result->fetchAll();
     }
+} else if ($user['user_type'] == 'admin') {
+    $sql = "SELECT * FROM trips";
+    $result = $pdo->query($sql);
+    $trips = $result->fetchAll();
 } else {
     $sql = "SELECT * FROM trips where company_id = $company_id";
     $result = $pdo->query($sql);
@@ -75,8 +83,8 @@ if (isset($_GET['search'])) {
                 <div class="p-2 w-full flex justify-between">
                     <form method="GET" action="/agency/trips">
                         <div class='flex flex-wrap gap-2 items-center'>
-                            <input type="text" class="w-32 lg:w-auto p-2 border border-gray-300 rounded-md" name="search"
-                                value="<?php echo $_GET['search'] ?? ''; ?>" placeholder="Search by Id">
+                            <input type="text" class="w-32 lg:w-auto p-2 border border-gray-300 rounded-md"
+                                name="search" value="<?php echo $_GET['search'] ?? ''; ?>" placeholder="Search by Id">
                             <?php
                             if (isset($_GET['search'])) {
                                 echo "<a href='/agency/trips'
@@ -132,7 +140,14 @@ if (isset($_GET['search'])) {
                                 $Departure_date = $trip['Departure_date'];
                                 $Arrival_date = $trip['Arrival_date'];
                                 $Hotel = $trip['Hotel'];
+                                $company_id = $trip['company_id'];
 
+                                $editAction = $company_id == $user['company_id'] ? "<a href='/agency/trips/edit-trip?tripId=$Id' style='color:green; name='edit'>Edit</a>" : "";
+
+                                $deleteAction = $company_id == $user['company_id'] ? "<form method='POST' action='/agency/trips'>
+                                    <input type='hidden' name='delete_id' value='$Id'>
+                                    <button type='submit' name='delete' class='text-red-500'>Delete</button>
+                                </form>" : "";
                                 echo " <tr
                                         class='odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'>
                                         <th scope='row' class='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'>
@@ -160,14 +175,10 @@ if (isset($_GET['search'])) {
                                             $Hotel
                                         </td>
                                         <td class='px-6 py-4'>
-                                                <a href='/agency/trips/edit-trip?tripId=$Id' style='color:green; name='edit'>Edit</a>
+                                            $editAction
                                         </td>
                                         <td class='px-6 py-4'>
-                                        <form method='POST' action='/agency/trips'> <!-- change to ur file name -->
-                                            <input type='hidden' name='delete_id' value='$Id'> <!-- Pass the delete_id as a hidden input -->
-                                            <button class='btn' name='delete' id='yesButton' style='color:red;'>Delete</button>
-                                            </button>
-                                        </form>
+                                            $deleteAction
                                     </td>
                                 </tr>";
                             }

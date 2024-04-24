@@ -6,6 +6,7 @@
 <?php
 // Start the session
 session_start();
+// assign a variable to the user type
 
 $userType = $_SESSION['USER']['user_type'] ?? null;
 // Define routes based on user roles
@@ -20,8 +21,11 @@ switch ($userType) {
             '/home',
             '/agency',
             '/agency/trips',
+            '/agency/trips/add-trip',
             '/agency/circuits',
+            '/agency/circuits/add-circuit',
             '/agency/vehicles',
+            '/agency/vehicles/add-vehicle',
             '/agency/customers',
             '/profile',
         ];
@@ -29,6 +33,7 @@ switch ($userType) {
     case 'user':
         // Customer can only visit trips
         $allowedPages = [
+            '/',
             '/home',
             '/trips',
             '/profile'
@@ -41,8 +46,8 @@ switch ($userType) {
 }
 
 // Check if the current page is allowed for the user's role
-$currentPage = basename($_SERVER['REQUEST_URI']);
-if (!in_array($currentPage, $allowedPages ?? []) && $userType == 'user') {
+$currentPage = $_SERVER['REQUEST_URI'];
+if (!in_array($currentPage, $allowedPages ?? []) && $userType !== 'admin') {
     // Page is not allowed for the user's role
     // Redirect to a default page or show an error message
     header("Location: /404.php");

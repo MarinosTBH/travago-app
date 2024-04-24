@@ -7,6 +7,7 @@ if ($_SESSION['USER']['user_type'] != 'user') {
 }
 // Get the user ID from the session
 $userId = $_SESSION['USER']['id'];
+$error = [];
 // Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // Read form data
@@ -36,9 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $_SESSION['USER'] = $user;
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
-        echo "<p class='absolute w-full mx-auto text-center text-red-500'>
-        $error
-    </p>";
+        echo "<p class='absolute w-full mx-auto text-center text-red-500'>$error</p>";
     }
 } else {
     // If the form is not submitted, fetch the user data
@@ -50,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         $error = "Error: " . $e->getMessage();
-        echo "<p class='absolute w-full mx-auto text-center text-red-500'>
-        $error
-    </p>";
+        echo "<p class='absolute w-full mx-auto text-center text-red-500'>$error</p>";
     }
 }
 
@@ -78,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 </svg>
             </a>
             <h1 class="text-3xl font-bold tracking-tight text-gray-900">
-               My profile
+                My profile
             </h1>
         </div>
     </header>
@@ -108,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                         placeholder="janesmith" value="<?php echo $user['username']; ?>">
                                 </div>
                                 <p class="absolute w-full mx-auto text-center text-red-500">
-                                    <?php echo $error['username']; ?>
+                                    <?php if (isset($error['username'])) echo $error['username']; ?>
                                 </p>
                             </div>
                         </div>

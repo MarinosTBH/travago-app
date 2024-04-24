@@ -1,5 +1,4 @@
 <?php
-session_start();
 $user = $_SESSION['USER'];
 $role = $user['user_type'];
 $name = $user['username'];
@@ -16,7 +15,7 @@ $title = ucfirst($title);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
     <title>
         <?php
         echo $title;
@@ -42,6 +41,7 @@ $title = ucfirst($title);
                                 </p>
                             </div>
                         </a>
+                        <!-- Menu -->
                         <div class="hidden md:block">
                             <div class="ml-10 flex items-baseline space-x-4">
                                 <?php
@@ -160,7 +160,7 @@ $title = ucfirst($title);
                         <a href="profile"
                             class="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Your
                             Profile</a>
-                        <a href="/login"
+                        <a href="/utils/logout.php"
                             class="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white">Sign
                             out</a>
                     </div>
@@ -170,6 +170,7 @@ $title = ucfirst($title);
         <main>
         </main>
     </div>
+    <!-- Script for toggling the menu -->
     <script>
         function toggleMenu() {
             const menu = document.getElementById("travago-dropdown-menu");

@@ -13,7 +13,7 @@
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <h1 class="text-4xl font-semibold text-gray-900 sm:text-5xl">404 Not Found</h1>
             <p class="mt-4 text-lg text-gray-600">The page you are looking for does not exist.</p>
-            <a href="/" class="mt-8 inline-block px-6 py-3 text-sm font-medium text-gray-900 bg-blue-600 rounded-lg hover:bg-blue-700">
+            <a href="/" class="mt-8 inline-block px-6 py-3 text-sm font-medium text-gray-900 rounded-lg">
                 <div class="flex flex-col space-x-6">
                     <svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5'
                         stroke='currentColor' class='w-8 h-8 text-gray'>

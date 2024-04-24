@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS travago;
 CREATE TABLE companies (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
     phone VARCHAR(20),
     address VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS trips (
     Hotel varchar(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     company_id int(7) NOT NULL,
+    availability BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
@@ -54,7 +55,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     plate_number varchar(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     company_id int(7),
-    availablabity BOOLEAN DEFAULT TRUE,
+    availability BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (company_id) REFERENCES companies(id),
     PRIMARY KEY (Id)
 );
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
 CREATE TABLE IF NOT EXISTS tours (
     id int(7) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     program varchar(255) NOT NULL,
-    desciption varchar(255) NOT NULL,
+    description varchar(255) NOT NULL,
     destination varchar(255) NOT NULL,
     number_of_seats int(7) NOT NULL,
     departure_date date NOT NULL,
@@ -75,6 +76,18 @@ CREATE TABLE IF NOT EXISTS tours (
     company_id int(7) NOT NULL REFERENCES companies(id)
 );
 
+--------------------------------------------------------------------------------------------------------------------------------------
+create table if not exists bookings (
+    id int(7) NOT NULL PRIMARY KEY  AUTO_INCREMENT,
+    payment_method ENUM('credit_card', 'cash') NOT NULL,
+    name_on_card varchar(255), 
+    card_number varchar(16),
+    expiration_date date,
+    security_code varchar(3),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    trip_id int(7) NOT NULL REFERENCES trips(id), 
+    user_id int(7) NOT NULL REFERENCES users(id)
+);
 --------------------------------------------------------------------------------------------------------------------------------------
 -- Seed 
 -- Insert data into the companies table
@@ -221,7 +234,7 @@ VALUES
 INSERT INTO
     tours (
         program,
-        desciption,
+        description,
         destination,
         number_of_seats,
         departure_date,

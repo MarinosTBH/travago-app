@@ -3,6 +3,8 @@
 session_start();
 require 'config/connect.php';
 
+$error = "";
+$success = "";
 // check if already logged in
 if (isset($_SESSION['USER']['id'])) {
     header("Location: /home");
@@ -11,8 +13,6 @@ if (isset($_SESSION['USER']['id'])) {
     // checks if the server request is sent
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
         // if no credentials
-        $error = "";
-        $success = "";
         if (empty($_POST['email']) || empty($_POST['password']) || empty($_POST['confirm_password'])) {
             $error = "Please provide your credentials";
         } else {
@@ -141,6 +141,11 @@ if (isset($_SESSION['USER']['id'])) {
                             password</button>
                     </div>
                 </form>
+                    <p class="mt-10 text-center text-sm text-gray-500">
+                    Go back to
+                    <a href="/login" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                        Login</a>
+                </p>
             </div>
         </div>
     </div>
