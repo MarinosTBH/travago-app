@@ -45,6 +45,21 @@ CREATE TABLE IF NOT EXISTS trips (
     FOREIGN KEY (company_id) REFERENCES companies(id)
 );
 
+alter table
+    trips
+add
+    column vehicle_id int(7) NOT NULL references vehicles(id);
+
+alter table
+    trips
+add
+    column tour_id int(7) NOT NULL references tours(id);
+
+alter table
+    bookings
+add
+    column status enum('pending', 'validated') DEFAULT 'pending';
+
 --------------------------------------------------------------------------------------------------------------------------------------
 -- create the vehicles table
 CREATE TABLE IF NOT EXISTS vehicles (
@@ -78,16 +93,20 @@ CREATE TABLE IF NOT EXISTS tours (
 
 --------------------------------------------------------------------------------------------------------------------------------------
 create table if not exists bookings (
-    id int(7) NOT NULL PRIMARY KEY  AUTO_INCREMENT,
+    id int(7) NOT NULL PRIMARY KEY AUTO_INCREMENT,
     payment_method ENUM('credit_card', 'cash') NOT NULL,
-    name_on_card varchar(255), 
+    name_on_card varchar(255),
     card_number varchar(16),
-    expiration_date date,
+    expiration_year varchar(4),
+    expiration_month varchar(2),
     security_code varchar(3),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    trip_id int(7) NOT NULL REFERENCES trips(id), 
+    trip_id int(7) NOT NULL REFERENCES trips(id),
     user_id int(7) NOT NULL REFERENCES users(id)
 );
+alter table bookings add column expiration_year varchar(4);
+alter table bookings add column expiration_month varchar(2);
+alter table bookings drop column expiration_date;
 --------------------------------------------------------------------------------------------------------------------------------------
 -- Seed 
 -- Insert data into the companies table

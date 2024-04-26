@@ -44,6 +44,24 @@ $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
 $availability_status = $availability > 0 ? 'Available' : 'Full';
 $description = $trip['description'] ?? 'No description available';
 $userId = $user['id'];
+// tour and vehicle
+$tour_id = $trip['tour_id'];
+$vehicle_id = $trip['vehicle_id'];
+
+$circuit = 'No destination';
+$brand = 'No brand';
+if ($tour_id) {
+    $sql = "SELECT * FROM tours WHERE id = $tour_id";
+    $result = $pdo->query($sql);
+    $tour = $result->fetch();
+    $circuit = $tour['destination'] ?? 'No destination';
+}
+if ($vehicle_id) {
+    $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
+    $result = $pdo->query($sql);
+    $vehicle = $result->fetch();
+    $brand = $vehicle['brand'] ?? 'No brand';
+}
 
 // METHOD
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -65,9 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         ) {
             $error = "Please fill all the payment form";
         } else {
-            $expiration_date = "01" + $expiration_month + $expiration_year;
-            $sql = "INSERT INTO bookings (trip_id, user_id, payment_method, name_on_card, card_number, expiration_date, security_code) 
-            VALUES ($id, $userId, 'credit_card', '$name_on_card', '$card_number', '$expiration_date', '$security_code')";
+            $sql = "INSERT INTO bookings (trip_id, user_id, payment_method, name_on_card, card_number, expiration_year, expiration_month, security_code) 
+            VALUES ($id, $userId, 'credit_card', '$name_on_card', '$card_number', '$expiration_year','$expiration_month', '$security_code')";
             $pdo->exec($sql);
             $success = "Successfully booked with credit card payment method";
         }
@@ -86,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- <link href="/styles/output.css" rel="stylesheet"> -->
-    views/trips/index.php    <title>Booking</title>
+    <title>Booking</title>
 </head>
 
 <body>
@@ -165,6 +182,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <p class='text-sm text-gray-100 py-2'>
                             <?php echo $description ?>
                         </p>
+                        <p class='text-sm font-semibold text-gray-100 py-2''>Tour: <?php echo $circuit ?> </p>
+                        <p class=' text-sm font-semibold text-gray-100 py-2''>Vehicle: <?php echo $brand ?></p>
                         <!-- select payment method -->
                         <select id="credit_card" name="credit_card"
                             class='w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>

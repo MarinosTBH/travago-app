@@ -227,20 +227,37 @@ if (isset($_GET['search'])) {
     <div class="absolute top-64 z-50 grid grid-cols-1 w-full items-center justify-center md:grid-cols-4 p-2  gap-4">
         <!-- Card  -->
         <?php
-         if (empty($trips)) {
+        if (empty($trips)) {
             echo "<div class='w-full mx-auto text-center text-lg'>No trips found</div>";
         } else {
-        foreach ($trips as $trip) {
-            $destination = $trip['Destination'];
-            $departure_date = $trip['Departure_date'];
-            $price = $trip['price'] ?? 1000;
-            $availability = $trip['Number_of_seats'] - ($trip['number_of_booked_seats'] ?? 0);
-            $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
-            $availability_status = $availability > 0 ? 'Available' : 'Full';
-            $description = $trip['description'] ?? 'No description available';
-            $id = $trip['Id'];
+            foreach ($trips as $trip) {
+                $destination = $trip['Destination'];
+                $departure_date = $trip['Departure_date'];
+                $price = $trip['price'] ?? 1000;
+                $availability = $trip['Number_of_seats'] - ($trip['number_of_booked_seats'] ?? 0);
+                $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
+                $availability_status = $availability > 0 ? 'Available' : 'Full';
+                $description = $trip['description'] ?? 'No description available';
+                $id = $trip['Id'];
+                $tour_id = $trip['tour_id'] ?? '';
+                $vehicle_id = $trip['vehicle_id'] ?? '';
+                // tour and vehicle
+                $circuit = 'No destination';
+                $brand = 'No brand';
+                if ($tour_id) {
+                    $sql = "SELECT * FROM tours WHERE id = $tour_id";
+                    $result = $pdo->query($sql);
+                    $tour = $result->fetch();
+                    $circuit = $tour['destination'] ?? 'No destination';
+                }
+                if ($vehicle_id) {
+                    $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
+                    $result = $pdo->query($sql);
+                    $vehicle = $result->fetch();
+                    $brand = $vehicle['brand'] ?? 'No brand';
+                }
 
-            print ("<div id='$id' class='col-span-4 md:col-span-1 w-full lg:min-w-72 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2'>
+                print ("<div id='$id' class='col-span-4 md:col-span-1 w-full lg:min-w-72 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2'>
                 <div class='px-5 pb-5'>
                     <div class='flex flex-row items-center justify-between'>
                         <div>
@@ -292,6 +309,10 @@ if (isset($_GET['search'])) {
                             class='text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-200 text-blue-800 ms-3'>5.0</span>
                     </div>
                     <p class='text-sm text-gray-100 py-2'>$description</p>
+                        <div class='flex flex-col items-start justify-between'>
+                            <span class='text-sm font-semibold text-gray-100'>Tour: $circuit </span>
+                            <span class='text-sm font-semibold text-gray-100'>Vehicle: $brand</span>
+                        </div>
                     <div class='flex items-center justify-between'>
                         <span class='text-3xl font-bold text-gray-900 text-white'>TND $price</span>
                         <a href='/trips/booking?id=$id'
@@ -302,8 +323,8 @@ if (isset($_GET['search'])) {
                 </div>
             </div>
             ");
+            }
         }
-    }
         ?>
     </div>
 </body>

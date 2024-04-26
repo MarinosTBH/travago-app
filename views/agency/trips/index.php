@@ -118,10 +118,12 @@ if (isset($_GET['search'])) {
                             <th id="c" scope="col" class="px-6 py-3">Destination</th>
                             <th id="c" scope="col" class="px-6 py-3">Flight number</th>
                             <th id="c" scope="col" class="px-6 py-3">Number of seats</th>
-                            <th id="c" scope="col" class="px-6 py-3">Plan</th>
                             <th id="c" scope="col" class="px-6 py-3"> Departure date</th>
                             <th id="c" scope="col" class="px-6 py-3">Arrival date</th>
+                            <th id="c" scope="col" class="px-6 py-3">Tour</th>
+                            <th id="c" scope="col" class="px-6 py-3">Vehicle</th>
                             <th id="c" scope="col" class="px-6 py-3">Hotel</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -142,8 +144,24 @@ if (isset($_GET['search'])) {
                                 $Hotel = $trip['Hotel'];
                                 $company_id = $trip['company_id'];
 
-                                $editAction = $company_id == $user['company_id'] ? "<a href='/agency/trips/edit-trip?tripId=$Id' style='color:green; name='edit'>Edit</a>" : "";
+                                $tour = $trip['tour_id'] ?? '';
+                                $vehicle = $trip['vehicle_id'] ?? '';
+                                // populate data from tour and vehicle tables if they exist in the trip table 
+                                if ($tour) {
+                                    $sql = "SELECT * FROM tours WHERE Id = $tour";
+                                    $result = $pdo->query($sql);
+                                    $tour = $result->fetch();
+                                    $tour = $tour['destination'];
+                                }
+                                if ($vehicle) {
+                                    $sql = "SELECT * FROM vehicles WHERE Id = $vehicle";
+                                    $result = $pdo->query($sql);
+                                    $vehicle = $result->fetch();
+                                    $vehicle = $vehicle['brand'];
+                                }
 
+                                $editAction = $company_id == $user['company_id'] ? "<a href='/agency/trips/edit-trip?tripId=$Id' style='color:green; name='edit'>Edit</a>" : "";
+                                $manageSeatsActions = $company_id == $user['company_id'] ? "<a href='/agency/trips/manage-seats?tripId=$Id' style='color:blue; name='edit'>Manage seats</a>" : "";
                                 $deleteAction = $company_id == $user['company_id'] ? "<form method='POST' action='/agency/trips'>
                                     <input type='hidden' name='delete_id' value='$Id'>
                                     <button type='submit' name='delete' class='text-red-500'>Delete</button>
@@ -163,16 +181,16 @@ if (isset($_GET['search'])) {
                                             $Number_of_seats
                                         </td>
                                         <td class='px-6 py-4'>
-                                            $Plan
-                                        </td>
-                                        <td class='px-6 py-4'>
                                             $Departure_date
                                         </td>
                                         <td class='px-6 py-4'>
                                             $Arrival_date
                                         </td>
                                         <td class='px-6 py-4'>
-                                            $Hotel
+                                            $tour
+                                        </td>
+                                        <td class='px-6 py-4'>
+                                            $vehicle
                                         </td>
                                         <td class='px-6 py-4'>
                                             $editAction
@@ -180,6 +198,7 @@ if (isset($_GET['search'])) {
                                         <td class='px-6 py-4'>
                                             $deleteAction
                                     </td>
+                                    <td>$manageSeatsActions</td>
                                 </tr>";
                             }
                         }

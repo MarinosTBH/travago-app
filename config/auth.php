@@ -22,10 +22,14 @@ switch ($userType) {
             '/agency',
             '/agency/trips',
             '/agency/trips/add-trip',
+            '/agency/trips/edit-trip',
+            '/agency/trips/manage-seats',
             '/agency/circuits',
             '/agency/circuits/add-circuit',
+            '/agency/circuits/edit-circuit',
             '/agency/vehicles',
             '/agency/vehicles/add-vehicle',
+            '/agency/vehicles/edit-vehicle',
             '/agency/customers',
             '/profile',
         ];
@@ -46,7 +50,7 @@ switch ($userType) {
 }
 
 // Check if the current page is allowed for the user's role
-$currentPage = $_SERVER['REQUEST_URI'];
+$currentPage = strtok($_SERVER["REQUEST_URI"], '?');
 if (!in_array($currentPage, $allowedPages ?? []) && $userType !== 'admin') {
     // Page is not allowed for the user's role
     // Redirect to a default page or show an error message

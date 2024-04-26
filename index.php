@@ -70,6 +70,10 @@ $routes = array(
         'view' => 'agency/trips/edit-trip.php',
         'pattern' => '/^\\/agency\/trips\/edit-trip(\?tripId=\d+)?$/'
     ),
+    '/agency/trips/manage-seats' => array(
+        'view' => 'agency/trips/manage-seats.php',
+        'pattern' => '/^\\/agency\/trips\/manage-seats(\?id=\d+)?$/'
+    ),
     '/agency/circuits' => array(
         'view' => 'agency/circuits/index.php',
         'pattern' => '/^\\/agency\/circuits$/'
@@ -122,7 +126,7 @@ if ($routeMatch !== null) {
 } else {
     // Handle 404
     http_response_code(404);
-    require $viewDir . '404.php';
+    require '404.php';
 }
 ?>
 <!DOCTYPE html>

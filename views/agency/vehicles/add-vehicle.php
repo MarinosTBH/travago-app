@@ -47,10 +47,9 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--<script src="https://cdn.tailwindcss.com"></script>-->
-    <!-- <link ref="stylesheet" href="styles/output.css"> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link href="/styles/output.css" ref="stylesheet"> -->
     <title>Add vehicles</title>
-    <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         * {
             margin: 0;

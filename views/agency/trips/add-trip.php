@@ -12,14 +12,28 @@ if (isset($_POST['submit'])) {
   $de = @$_POST['dep'];
   $a = @$_POST['arrival'];
   $h = @$_POST['hotel'];
+  $c = @$_POST['circuit'];
+  $v = @$_POST['vehicle'];
   $user = $_SESSION['USER'];
   $company_id = $user['company_id'];
 
-  if (is_numeric($_POST['desti']) || is_numeric($_POST['flight']) == FALSE || is_numeric($_POST['seats']) == FALSE || is_numeric($_POST['plan']) || is_numeric($_POST['hotel'])) {
+  if (
+    is_numeric($_POST['desti']) ||
+    is_numeric($_POST['flight']) == FALSE ||
+    is_numeric($_POST['seats']) == FALSE ||
+    is_numeric($_POST['plan']) ||
+    is_numeric(
+      $_POST['hotel'] ||
+      is_numeric($_POST['circuit']) == FALSE ||
+      is_numeric($_POST['vehicle'] == FALSE) ||
+      is_numeric($_POST['dep'] == FALSE) ||
+      is_numeric($_POST['arrival'] == FALSE)
+    )
+  ) {
     $o = "Please verify your informations type!";
   } else {
-    $q = $pdo->prepare("INSERT INTO trips(Destination, Flight_number, Number_of_seats, Plan, Departure_date, Arrival_date, Hotel, company_id) 
-      VALUES (:Destination, :Flight_number, :Number_of_seats, :Plan, :Departure_date, :Arrival_date, :Hotel, :company_id)");
+    $q = $pdo->prepare("INSERT INTO trips(Destination, Flight_number, Number_of_seats, Plan, Departure_date, Arrival_date, Hotel, company_id, tour_id, vehicle_id) 
+      VALUES (:Destination, :Flight_number, :Number_of_seats, :Plan, :Departure_date, :Arrival_date, :Hotel, :company_id, :circuit, :vehicle)");
     $q->bindParam(':Destination', $d);
     $q->bindParam(':Flight_number', $f);
     $q->bindParam(':Number_of_seats', $s);
@@ -27,6 +41,8 @@ if (isset($_POST['submit'])) {
     $q->bindParam(':Departure_date', $de);
     $q->bindParam(':Arrival_date', $a);
     $q->bindParam(':Hotel', $h);
+    $q->bindParam(':circuit', $c);
+    $q->bindParam(':vehicle', $v);
     $q->bindParam(':company_id', $company_id);
 
 
@@ -82,6 +98,15 @@ if (isset($_POST['submit'])) {
       width: 60%;
       margin: 0 auto;
       position: relative;
+    }
+
+    /* sm */
+    @media (max-width: 640px) {
+      .container {
+        width: 100%;
+        margin: 0 auto;
+        position: relative;
+      }
     }
 
     #contact input,
@@ -280,96 +305,132 @@ if (isset($_POST['submit'])) {
   </header>
   <div class="container">
 
-      <form id="contact" method="post" action="/agency/trips/add-trip">
-        <h2 class="text-base font-semibold leading-7 text-gray-900" id="add">Add a trip</h2>
-        <!--<p class="mt-1 text-sm leading-6 text-gray-600" id="info">                      </p>-->
-        <?php
-        $i = @$el;
-        echo "<div id='i'>$i</div>";
-        $oo = @$o;
-        echo "<div id='o'>$oo</div>";
-        ?>
+    <form id="contact" method="post" action="/agency/trips/add-trip">
+      <h2 class="text-base font-semibold leading-7 text-gray-900" id="add">Add a trip</h2>
+      <!--<p class="mt-1 text-sm leading-6 text-gray-600" id="info">                      </p>-->
+      <?php
+      $i = @$el;
+      echo "<div id='i'>$i</div>";
+      $oo = @$o;
+      echo "<div id='o'>$oo</div>";
+      ?>
 
-        <div class="row">
-          <div class="col">
-            <fieldset>
-              <label for="first-name">Destination
-                <?php echo " <font color='red'> * </font>"; ?>
-              </label>
-            </fieldset>
-            <fieldset>
-              <input type="text" name="desti" autocomplete="given-name" required>
-            </fieldset>
-
-            <fieldset>
-              <label for="street-address">Flight Number
-                <?php echo " <font color='red'> * </font>"; ?>
-              </label>
-            </fieldset>
-            <fieldset>
-              <input type="text" name="flight" autocomplete="street-address" required>
-            </fieldset>
-            <fieldset>
-              <label for="street-address">Number of seats
-                <?php echo " <font color='red'> * </font>"; ?>
-              </label>
-            </fieldset>
-            <fieldset>
-              <input type="text" name="seats" autocomplete="street-address" required>
-            </fieldset>
-          </div>
-
-
-
-          <div class="col">
-            <table>
-              <tr>
-                <fieldset>
-                  <td><label for="email">Plan
-                      <?php echo " <font color='red'> * </font>"; ?>
-                    </label>
-                    <textarea id="text" name="plan" rows="6" cols="40" autocomplete="email" required></textarea>
-                  </td>
-                </fieldset>
-              </tr>
-              <tr>
-                <fieldset>
-                  <td> <label for="last-name">Departure Date
-                      <?php echo " <font color='red'> * </font>"; ?>
-                    </label>
-                    <input type="date" name="dep" autocomplete="family-name" id="co" required>
-                  </td>
-                </fieldset>
-              </tr>
-              <tr>
-
-                <fieldset>
-                  <td> <label for="street-address">Arrival Date
-                      <?php echo " <font color='red'> * </font>"; ?>
-                    </label>
-                    <input type="date" name="arrival" autocomplete="street-address" id="co" required>
-                  </td>
-                </fieldset>
-              </tr>
-
-              <fieldset>
-                <td><label for="city">Hotel
-                    <?php echo " <font color='red'> * </font>"; ?>
-                  </label>
-                  <input type="text" name="hotel" autocomplete="address-level2" required>
-                </td>
-              </fieldset>
-            </table>
-
-          </div>
-        </div>
-        <div id="button">
+      <div class="row">
+        <div class="col">
           <fieldset>
-            <button type="reset" id="contact-submit" class="can">Cancel</button>
-            <button type="submit" name="submit" id="contact-submit">Save</button>
+            <label for="first-name">Destination
+              <?php echo " <font color='red'> * </font>"; ?>
+            </label>
+          </fieldset>
+          <fieldset>
+            <input type="text" name="desti" autocomplete="given-name" required>
+          </fieldset>
+
+          <fieldset>
+            <label for="street-address">Flight Number
+              <?php echo " <font color='red'> * </font>"; ?>
+            </label>
+          </fieldset>
+          <fieldset>
+            <input type="text" name="flight" autocomplete="street-address" required>
+          </fieldset>
+          <fieldset>
+            <label for="street-address">Number of seats
+              <?php echo " <font color='red'> * </font>"; ?>
+            </label>
+          </fieldset>
+          <fieldset>
+            <input type="text" name="seats" autocomplete="street-address" required>
+          </fieldset>
+          <!-- circuit -->
+          <fieldset>
+            <td><label for="city"> Circuit
+                <?php echo " <font color='red'> * </font>"; ?>
+              </label>
+              <select name="circuit" id="co" required
+                class='bg-white rounded-lg w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>
+                <?php
+                $q = $pdo->prepare("SELECT * FROM tours WHERE company_id = $user[company_id]");
+                $q->execute();
+                $tours = $q->fetchAll();
+                foreach ($tours as $tour) {
+                  echo "<option value='$tour[id]'>$tour[destination]</option>";
+                }
+                ?>
+              </select>
+            </td>
+          </fieldset>
+          <!-- vehicle -->
+          <fieldset>
+            <td><label for="city"> Vehicle
+                <?php echo " <font color='red'> * </font>"; ?>
+              </label>
+              <select name="vehicle" id="co" required
+                class='bg-white rounded-lg w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>
+                <?php
+                $q = $pdo->prepare("SELECT * FROM vehicles WHERE company_id = $user[company_id]");
+                $q->execute();
+                $vehicles = $q->fetchAll();
+                foreach ($vehicles as $vehicle) {
+                  echo "<option value='$vehicle[id]'>$vehicle[brand]</option>";
+                }
+                ?>
+              </select>
+            </td>
           </fieldset>
         </div>
-      </form>
+
+
+
+        <div class="col">
+          <table>
+            <tr>
+              <fieldset>
+                <td><label for="email">Plan
+                    <?php echo " <font color='red'> * </font>"; ?>
+                  </label>
+                  <textarea id="text" name="plan" rows="6" cols="40" autocomplete="email" required></textarea>
+                </td>
+              </fieldset>
+            </tr>
+            <tr>
+              <fieldset>
+                <td> <label for="last-name">Departure Date
+                    <?php echo " <font color='red'> * </font>"; ?>
+                  </label>
+                  <input type="date" name="dep" autocomplete="family-name" id="co" required>
+                </td>
+              </fieldset>
+            </tr>
+            <tr>
+
+              <fieldset>
+                <td> <label for="street-address">Arrival Date
+                    <?php echo " <font color='red'> * </font>"; ?>
+                  </label>
+                  <input type="date" name="arrival" autocomplete="street-address" id="co" required>
+                </td>
+              </fieldset>
+            </tr>
+
+            <fieldset>
+              <td><label for="city">Hotel
+                  <?php echo " <font color='red'> * </font>"; ?>
+                </label>
+                <input type="text" name="hotel" autocomplete="address-level2" required>
+              </td>
+            </fieldset>
+          </table>
+
+        </div>
+      </div>
+      <div id="button">
+        <fieldset>
+          <button type="reset" id="contact-submit" class="can">Cancel</button>
+          <button type="submit" name="submit" id="contact-submit">Save</button>
+        </fieldset>
+      </div>
+    </form>
 
 </body>
 
