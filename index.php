@@ -102,6 +102,10 @@ $routes = array(
         'view' => 'agency/customers.php',
         'pattern' => '/^\\/agency\/customers$/'
     ),
+    '/agency/statistics' => array(
+        'view' => 'agency/statistics.php',
+        'pattern' => '/^\\/agency\/bookings$/'
+    ),
     // Add more routes as needed...
 );
 
@@ -131,16 +135,11 @@ if ($routeMatch !== null) {
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="/public/favicon.svg" type="image/x-icon" />
+    <script src="scripts/tailwind.js" defer></script>
     <title>Travago</title>
 </head>
-
-<body>
-    <!-- Your HTML content here -->
-</body>
-
 </html>
