@@ -11,7 +11,7 @@ $errorSearch = "";
 try {
   if (isset($_POST['activate']) && isset($_POST['activate_id'])) {
     $id = $_POST['activate_id'];
-    $sql = 'UPDATE users SET isVerified = !isVerified WHERE id = :id';
+    $sql = 'UPDATE users SET isVerified = 1 WHERE id = :id';
     $stmt = $pdo->prepare($sql);
     $stmt->bindValue(':id', $id);
     if ($stmt->execute()) {
@@ -42,63 +42,30 @@ try {
   echo "connection failed: " . $e->getMessage();
 }
 
-/////////////////////////////// GET FOR ADMIN
 if (isset($_GET['search'])) {
   $search = $_GET['search'];
   if (empty($search)) {
     $errorSearch = "Please enter a keyword to search";
   } else {
 
-    if ($user['user_type'] == "admin") {
       try {
-        /////////////////////////////// get all users as admin 
         $stmt = $pdo->prepare("SELECT * FROM users WHERE id LIKE '%$search%' AND username != '%travago%'");
         $stmt->execute();
         $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
       } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
       }
-    } else if ($user['user_type'] == "agency") {
-
-      /////////////////////////////// GET FOR agency
-      try {
-
-        $sql = "SELECT * FROM users WHERE id LIKE '%$search%' AND company_id = :company_id AND user_type != 'agency'";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':company_id', $company_id);
-        $stmt->execute();
-        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-      } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-      }
-
-    }
+    
   }
 } else {
-  if ($user['user_type'] == "admin") {
     try {
-      /////////////////////////////// get all users as admin 
       $stmt = $pdo->prepare("SELECT * FROM users WHERE user_type != 'admin'");
       $stmt->execute();
       $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
       echo "Error: " . $e->getMessage();
     }
-  } else if ($user['user_type'] == "agency") {
-
-    /////////////////////////////// GET FOR agency
-    try {
-
-      $sql = "SELECT * FROM users WHERE company_id = :company_id AND user_type != 'agency'";
-      $stmt = $pdo->prepare($sql);
-      $stmt->bindParam(':company_id', $company_id);
-      $stmt->execute();
-      $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (PDOException $e) {
-      echo "Error: " . $e->getMessage();
-    }
-
-  }
+  
 }
 
 ?>
@@ -179,7 +146,7 @@ if (isset($_GET['search'])) {
               Created at
             </th>
             <th>
-              Company name
+              Role
             </th>
             <th>
             </th>
@@ -203,8 +170,18 @@ if (isset($_GET['search'])) {
               $phone = $user['phone'];
               $created_at = $user['created_at'];
               $role = $user['user_type'];
-              $company_id = $user['company_id'];
 
+              //activate
+              $activateLabel = $isVerified ? 'Deactivate' : 'Activate';
+              $activateAction = $role == 'user' && $isVerified ? '' :
+                "<form method='POST' action='/agency/customers'> <!-- change to ur file name -->
+                  <input type='hidden' name='activate_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
+                  <input type='hidden' name='isVerified' value='$isVerified'> <!-- Pass the delete_id as a hidden input -->
+                  <button class='btn' name='activate' id='yesButton' style='color:blue;'>
+                    $activateLabel
+                  </button>
+                  </button>
+                </form>";
               echo " <tr
                     class='odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700'>
                     <th scope='row' class='px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white'>
@@ -226,15 +203,10 @@ if (isset($_GET['search'])) {
                         $created_at
                     </td>
                     <td class='px-6 py-4'>
-                        $company_id
+                      $role
                     </td>
                     <td class='px-6 py-4'>
-                    <form method='POST' action='/agency/customers'> <!-- change to ur file name -->
-                            <input type='hidden' name='activate_id' value='$id'> <!-- Pass the delete_id as a hidden input -->
-                            <input type='hidden' name='isVerified' value='$isVerified'> <!-- Pass the delete_id as a hidden input -->
-                            <button class='btn' name='activate' id='yesButton' style='color:blue;'>Change Status</button>
-                        </button>
-                        </form>
+                      $activateAction
                     </td>
                     <td class='px-6 py-4'>
                         <form method='POST' action='/agency/customers'> <!-- change to ur file name -->

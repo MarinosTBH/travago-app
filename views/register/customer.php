@@ -11,7 +11,7 @@ if (isset($_SESSION['USER']['id'])) {
         $error = "";
         if (
             empty($_POST['username']) || empty($_POST['email']) || empty($_POST['password']) ||
-            empty($_POST['phone']) || empty($_POST['passport_number'] || empty($_POST['company_id']))
+            empty($_POST['phone']) || empty($_POST['passport_number'])
         ) {
             $error = "Please provide your credentials";
         } else {
@@ -24,7 +24,7 @@ if (isset($_SESSION['USER']['id'])) {
                 $passport_number = $_POST['passport_number'];
                 $user_type = 'user';
                 // convert to number
-                $company_id = (int) $_POST['company_id'];
+                $company_id = 1;
                 $isVerified = 0;
                 //encrypt password
                 $pass = password_hash($pass, PASSWORD_BCRYPT, array("cost" => 12));
@@ -50,8 +50,8 @@ if (isset($_SESSION['USER']['id'])) {
                     $stmt->bindParam(':company_id', $company_id);
                     $stmt->bindParam(':isVerified', $isVerified);
                     $stmt->execute();
-                        echo '<script>alert("New account created.")</script>';
-                        echo '<script>window.location.replace("/login")</script>';
+                    echo '<script>alert("New account created.")</script>';
+                    echo '<script>window.location.replace("/login")</script>';
                 }
             } catch (PDOException $e) {
                 $error = "Error: " . $e->getMessage();
@@ -208,26 +208,6 @@ if (isset($_SESSION['USER']['id'])) {
                                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
                         </div>
                     </div>
-                    <div class="w-full sm:col-span-3">
-                        <label for="company_id"
-                            class="block text-sm font-medium leading-6 text-gray-900">Company</label>
-                        <div class="mt-2">
-                            <select id="company_id" name="company_id" autocomplete="company_id"
-                                class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                <option value="">Select a company</option>
-                                <?php
-                                if (count($companies) == 0) {
-                                    echo "<option value=''>No companies found</option>";
-                                } else {
-                                    foreach ($companies as $row) {
-                                        echo "<option value='" . $row['id'] . "'>" . $row['name'] . "</option>";
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </div>
-                    </div>
-
                     <div>
                         <button type="submit"
                             class="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">

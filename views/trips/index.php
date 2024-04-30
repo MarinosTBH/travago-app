@@ -6,22 +6,57 @@ $user = $_SESSION['USER'];
 $company_id = $user['company_id'];
 $errorSearch = '';
 $trips = [];
-// search by destination 
+// search tours by destination 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
     if (empty($search)) {
         $errorSearch = "Please enter a keyword to search";
     } else {
-        $sql = "SELECT * FROM trips where company_id = $company_id and destination like '%$search%'";
+        $sql = "SELECT * FROM trips where destination like '%$search%'";
         $result = $pdo->query($sql);
         $trips = $result->fetchAll();
     }
 } else {
-    $sql = "SELECT * FROM trips where company_id = $company_id";
+    $sql = "SELECT * FROM trips";
     $result = $pdo->query($sql);
     $trips = $result->fetchAll();
 }
+// Search circuits by destination
+$circuits = [];
+if (isset($_GET['search_circuits'])) {
+    $searchCircuits = $_GET['search_circuits'];
+    if (empty($searchCircuits)) {
+        $errorSearch = "Please enter a keyword to search";
+    } else {
+        $sql = "SELECT * FROM tours where destination like '%$searchCircuits%'";
+        $result = $pdo->query($sql);
+        $circuits = $result->fetchAll();
+    }
+} else {
+    $sql = "SELECT * FROM tours";
+    $result = $pdo->query($sql);
+    $circuits = $result->fetchAll();
+}
+
+// search vehicles by brand
+$vehicles = [];
+if (isset($_GET['search_vehicles'])) {
+    $searchVehicles = $_GET['search_vehicles'];
+    if (empty($searchVehicles)) {
+        $errorSearch = "Please enter a keyword to search";
+    } else {
+        $sql = "SELECT * FROM vehicles where brand like '%$searchVehicles%'";
+        $result = $pdo->query($sql);
+        $vehicles = $result->fetchAll();
+    }
+} else {
+    $sql = "SELECT * FROM vehicles";
+    $result = $pdo->query($sql);
+    $vehicles = $result->fetchAll();
+}
 ?>
+
+
 <html lang="en">
 
 <head>
@@ -191,12 +226,12 @@ if (isset($_GET['search'])) {
 
     </header>
 
-    <!-- Search -->
+    <!-- Search trips -->
     <div class="absolute top-32 mx-auto z-50 w-full items-center justify-center p-2 gap-4">
         <form action="/trips" method="GET"
             class="mx-auto col-span-4 md:col-span-1 w-full lg:min-w-96 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2">
             <div class="flex items-center justify-between">
-                <input type="text" name="search" placeholder="Search by destination"
+                <input type="text" name="search" placeholder="Search tours by destination"
                     class="w-full bg-gray-800 text-white border-none focus:outline-none"
                     value="<?php echo $_GET['search'] ?? ''; ?>" />
                 <?php
@@ -222,9 +257,9 @@ if (isset($_GET['search'])) {
             </div>
         </form>
     </div>
-
-    <!-- Cards -->
-    <div class="absolute top-64 z-50 grid grid-cols-1 w-full items-center justify-center md:grid-cols-4 p-2  gap-4">
+    <!-- Trips Cards -->
+    <div
+        class="absolute left-0 top-64 z-50 flex flex-row w-full p-2 gap-4 overflow-x-auto border bg-[#000668] bg-opacity-50">
         <!-- Card  -->
         <?php
         if (empty($trips)) {
@@ -309,10 +344,6 @@ if (isset($_GET['search'])) {
                             class='text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-200 text-blue-800 ms-3'>5.0</span>
                     </div>
                     <p class='text-sm text-gray-100 py-2'>$description</p>
-                        <div class='flex flex-col items-start justify-between'>
-                            <span class='text-sm font-semibold text-gray-100'>Tour: $circuit </span>
-                            <span class='text-sm font-semibold text-gray-100'>Vehicle: $brand</span>
-                        </div>
                     <div class='flex items-center justify-between'>
                         <span class='text-3xl font-bold text-gray-900 text-white'>TND $price</span>
                         <a href='/trips/booking?id=$id'
@@ -327,6 +358,271 @@ if (isset($_GET['search'])) {
         }
         ?>
     </div>
+
+    <!-- search circuits -->
+    <div class="absolute top-[550px] mx-auto z-50 w-full items-center justify-center p-2 gap-4">
+        <form action="/trips" method="GET"
+            class="mx-auto col-span-4 md:col-span-1 w-full lg:min-w-96 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2">
+            <div class="flex items-center justify-between">
+                <input type="text" name="search_circuits" placeholder="Search circuits by destination"
+                    class="w-full bg-gray-800 text-white border-none focus:outline-none"
+                    value="<?php echo $_GET['search_circuits'] ?? ''; ?>" />
+                <?php
+                if (isset($_GET['search_circuits'])) {
+                    echo "<a href='/trips' 
+                    class='rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
+                    >Clear</a>"
+                    ;
+                    if (!empty($_GET['search_circuits'])) {
+                        echo "<p class='text-green-500 text-sm'><span class='text-sm text-green-500'>Destination: {$_GET['search_circuits']}</span></p>";
+
+                    }
+                } else {
+                    echo "<button type='submit'
+                        class='hidden lg:block rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+                        Search</button>";
+                }
+                if ($errorSearch) {
+                    echo "<p class='text-xs text-red-500'>$errorSearch</p>";
+                }
+
+                ?>
+            </div>
+        </form>
+    </div>
+    <!-- Circuits cards -->
+    <div
+        class="absolute left-0 top-[650px] z-50 flex flex-row w-full p-2 gap-4 overflow-x-auto border bg-[#000668] bg-opacity-50">
+        <!-- Card  -->
+        <?php
+        if (empty($circuits)) {
+            echo "<div class='w-full mx-auto text-center text-lg'>No circuits found</div>";
+        } else {
+            foreach ($circuits as $circuit) {
+                $program = $circuit['program'];
+                $description = $circuit['description'];
+                $destination = $circuit['destination'];
+                $number_of_seats = $circuit['number_of_seats'] - ($circuit['number_of_booked_seats'] ?? 0);
+                $departure_date = $circuit['departure_date'];
+                $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
+                $arrival_date = $circuit['arrival_date'];
+                $accomodation = $circuit['accomodation'];
+                $transport_type = $circuit['transport_type'];
+                $availability_status = $availability > 0 ? 'Available' : 'Full';
+                $price = $circuit['price'] ?? 500;
+                $id = $circuit['id'];
+                $tour_id = $circuit['tour_id'] ?? '';
+                $vehicle_id = $circuit['vehicle_id'] ?? '';
+                // tour and vehicle
+                // $circuit = 'No destination';
+                // $brand = 'No brand';
+                // if ($tour_id) {
+                //     $sql = "SELECT * FROM tours WHERE id = $tour_id";
+                //     $result = $pdo->query($sql);
+                //     $tour = $result->fetch();
+                //     $circuit = $tour['destination'] ?? 'No destination';
+                // }
+                // if ($vehicle_id) {
+                //     $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
+                //     $result = $pdo->query($sql);
+                //     $vehicle = $result->fetch();
+                //     $brand = $vehicle['brand'] ?? 'No brand';
+                // }
+        
+                print ("<div id='$id' class='col-span-4 md:col-span-1 w-full lg:min-w-72 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2'>
+                <div class='px-5 pb-5'>
+                    <div class='flex flex-row items-center justify-between'>
+                        <div>
+                            <h5 class='text-xl font-semibold tracking-tight text-white'>$destination
+                            </h5>
+                            <span class='text-sm text-white'>$departure_date</span>
+                        </div>
+                        <div class='flex flex-col space-y-1'>
+                            <span
+                                class='bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-green-200 dark:text-green-800 ms-auto'>
+                                $status
+                            </span>
+                            <span
+                                class='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-red-200 dark:text-red-800 ms-auto'>
+                                $availability_status
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class='flex items-center mt-2.5 mb-5'>
+                        <div class='flex items-center space-x-1 rtl:space-x-reverse'>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-gray-600' aria-hidden='true'
+                                xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                        </div>
+                        <span
+                            class='text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-200 text-blue-800 ms-3'>5.0</span>
+                    </div>
+                    <p class='text-sm text-gray-100 py-2'>$description</p>
+                        <div class='flex flex-col items-start justify-between'>
+                        </div>
+                    <div class='flex items-center justify-between'>
+                        <span class='text-3xl font-bold text-gray-900 text-white'>TND $price</span>
+                        
+                    </div>
+                </div>
+            </div>
+            ");
+            }
+        }
+        ?>
+    </div>
+
+    <!-- search vehicles -->
+    <div class="absolute top-[950px] mx-auto z-50 w-full items-center justify-center p-2 gap-4">
+        <form action="/trips" method="GET"
+            class="mx-auto col-span-4 md:col-span-1 w-full lg:min-w-96 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2">
+            <div class="flex items-center justify-between">
+                <input type="text" name="search_vehicles" placeholder="Search vehicles by brand"
+                    class="w-full bg-gray-800 text-white border-none focus:outline-none"
+                    value="<?php echo $_GET['search_vehicles'] ?? ''; ?>" />
+                <?php
+                if (isset($_GET['search_vehicles'])) {
+                    echo "<a href='/trips' 
+                    class='rounded-md bg-red-500 px-3.5 py-2.5 text-sm font-semibold text-gray-900 shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600'
+                    >Clear</a>"
+                    ;
+                    if (!empty($_GET['search_vehicles'])) {
+                        echo "<p class='text-green-500 text-sm'><span class='text-sm text-green-500'>Destination: {$_GET['search_vehicles']}</span></p>";
+
+                    }
+                } else {
+                    echo "<button type='submit'
+                        class='hidden lg:block rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'>
+                        Search</button>";
+                }
+                if ($errorSearch) {
+                    echo "<p class='text-xs text-red-500'>$errorSearch</p>";
+                }
+
+                ?>
+            </div>
+        </form>
+    </div>
+    <!-- Vehicles cards -->
+    <div
+        class="absolute left-0 top-[1050px] z-50 flex flex-row w-full p-2 gap-4 overflow-x-auto border bg-[#000668] bg-opacity-50">
+        <!-- Card  -->
+        <?php
+        if (empty($circuits)) {
+            echo "<div class='w-full mx-auto text-center text-lg'>No circuits found</div>";
+        } else {
+            foreach ($vehicles as $vehicle) {
+                $brand = $vehicle['brand'];
+                $model = $vehicle['model'];
+                $number_of_seats = $vehicle['number_of_seats'] - ($vehicle['number_of_booked_seats'] ?? 0);
+                $plate_number = $vehicle['plate_number'];
+                $created_at = $vehicle['created_at'];
+                $availability_status = $availability > 0 ? 'Available' : 'Full';
+                $id = $vehicle['id'];
+                // tour and vehicle
+                // $vehicle = 'No destination';
+                // $brand = 'No brand';
+                // if ($tour_id) {
+                //     $sql = "SELECT * FROM tours WHERE id = $tour_id";
+                //     $result = $pdo->query($sql);
+                //     $tour = $result->fetch();
+                //     $vehicle = $tour['destination'] ?? 'No destination';
+                // }
+                // if ($vehicle_id) {
+                //     $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
+                //     $result = $pdo->query($sql);
+                //     $vehicle = $result->fetch();
+                //     $brand = $vehicle['brand'] ?? 'No brand';
+                // }
+        
+                print ("<div id='$id' class='col-span-4 md:col-span-1 w-full lg:min-w-72 max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700 p-2'>
+                <div class='px-5 pb-5'>
+                    <div class='flex flex-row items-center justify-between'>
+                        <div>
+                            <h5 class='text-xl font-semibold tracking-tight text-white'>$brand
+                            </h5>
+                        </div>
+                        <div class='flex flex-col space-y-1'>
+                            <span
+                                class='bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full dark:bg-red-200 dark:text-red-800 ms-auto'>
+                                $availability_status
+                            </span>
+                        </div>
+
+                    </div>
+                    <div class='flex items-center mt-2.5 mb-5'>
+                        <div class='flex items-center space-x-1 rtl:space-x-reverse'>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-yellow-300' aria-hidden='true' xmlns='http://www.w3.org/2000/svg'
+                                fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                            <svg class='w-4 h-4 text-gray-600' aria-hidden='true'
+                                xmlns='http://www.w3.org/2000/svg' fill='currentColor' viewBox='0 0 22 20'>
+                                <path
+                                    d='M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z' />
+                            </svg>
+                        </div>
+                        <span
+                            class='text-xs font-semibold px-2.5 py-0.5 rounded bg-blue-200 text-blue-800 ms-3'>5.0</span>
+                    </div>
+                    <p class='text-sm text-gray-100 py-2'>
+                        <span class='text-sm font-semibold text-gray-100'>Model: $model </span>
+                        <span class='text-sm font-semibold text-gray-100'>Plate number: $plate_number</span>
+                    </p>
+                        <div class='flex flex-col items-start justify-between'>
+                        </div>
+                    <div class='flex items-center justify-between'>
+                        <span class='text-3xl font-bold text-gray-900 text-white'>
+                            <span class='text-sm font-semibold text-gray-100'>Number of seats: $number_of_seats </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            ");
+            }
+        }
+        ?>
+    </div>
+
 </body>
 
 </html>

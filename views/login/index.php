@@ -46,28 +46,35 @@ if (isset($user)) {
                 if ($userExists) {
                     $verifyPassword = password_verify($pass, $userExists['password']);
                     if ($verifyPassword) {
-                        // redirect to concerned page
-                        $_SESSION['USER'] = $userExists;
-                        switch ($userExists['user_type']) {
-                            case 'user':
-                                // if customer redirect to trips
-                                echo '<script>window.location.replace("/trips")</script>';
-                                break;
-                            case 'admin':
-                                // if admin redirect to admin panel
-                                echo '<script>window.location.replace("/agency")</script>';
-                                break;
-                            case 'agency':
-                                // if agency redirect to dashboard
-                                echo '<script>window.location.replace("/agency")</script>';
-                                break;
-                            default:
-                                echo '<script>window.location.replace("/home")</script>';
-                                break;
+
+                        // check active or not 
+                        if ($userExists['isVerified'] == 0) {
+                            $error = "Your account is not active yet. Please contact customer support to activate your account.";
+                        } else {
+
+                            // redirect to concerned page
+                            $_SESSION['USER'] = $userExists;
+                            switch ($userExists['user_type']) {
+                                case 'user':
+                                    // if customer redirect to trips
+                                    echo '<script>window.location.replace("/trips")</script>';
+                                    break;
+                                case 'admin':
+                                    // if admin redirect to admin panel
+                                    echo '<script>window.location.replace("/agency")</script>';
+                                    break;
+                                case 'agency':
+                                    // if agency redirect to dashboard
+                                    echo '<script>window.location.replace("/agency")</script>';
+                                    break;
+                                default:
+                                    echo '<script>window.location.replace("/home")</script>';
+                                    break;
+                            }
                         }
                     } else {
                         // password false
-                        $error = "Invalid credentials";
+                        $error = "Invalid credentials, check your email or password.";
                     }
                 } else {
                     $error = "Email dosen't exist";
@@ -104,11 +111,11 @@ if (isset($user)) {
         </div>
         <div class="w-full flex min-h-full flex-col items-center justify-center px-6 py-12 lg:px-8">
             <?php
-            if (isset($_SERVER['HTTP_REFERER'])){
+            if (isset($_SERVER['HTTP_REFERER'])) {
                 if (($_SERVER['HTTP_REFERER'] == 'http://localhost/') || ($_SERVER['HTTP_REFERER'] == 'http://localhost/home')) {
                     echo "<p class='w-full text-center' style='color:green;font-weight:bold;'>You must login first</p>";
-                } 
-            }?>
+                }
+            } ?>
             <!-- Image and title -->
             <div class="sm:mx-auto sm:w-full sm:max-w-sm">
                 <img class="mx-auto h-10 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
@@ -158,8 +165,7 @@ if (isset($user)) {
 
                 <p class="mt-10 text-center text-sm text-gray-500">
                     Not a member?
-                    <a href="/register/agency"
-                        class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+                    <a href="/register/agency" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
                         Register</a>
                 </p>
             </div>

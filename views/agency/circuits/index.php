@@ -28,21 +28,12 @@ if (isset($_GET['search'])) {
   $search = $_GET['search'];
   if (empty($search)) {
     $errorSearch = "Please enter a keyword to search";
-  } else if ($user['user_type'] == 'admin') {
-    // search by any keyword
-    $sql = "SELECT * FROM tours WHERE id LIKE '%$search%'";
-    $result = $pdo->query($sql);
-    $tours = $result->fetchAll();
-  } {
+  } else {
     // search by any keyword
     $sql = "SELECT * FROM tours WHERE id LIKE '%$search%' AND company_id = $company_id";
     $result = $pdo->query($sql);
     $tours = $result->fetchAll();
   }
-} else if ($user['user_type'] == 'admin') {
-  $sql = "SELECT * FROM tours";
-  $result = $pdo->query($sql);
-  $tours = $result->fetchAll();
 } else {
   $sql = "SELECT * FROM tours WHERE company_id = $company_id";
   $result = $pdo->query($sql);

@@ -12,8 +12,6 @@ if (isset($_POST['submit'])) {
   $de = @$_POST['dep'];
   $a = @$_POST['arrival'];
   $h = @$_POST['hotel'];
-  $c = @$_POST['circuit'];
-  $v = @$_POST['vehicle'];
   $user = $_SESSION['USER'];
   $company_id = $user['company_id'];
 
@@ -24,16 +22,14 @@ if (isset($_POST['submit'])) {
     is_numeric($_POST['plan']) ||
     is_numeric(
       $_POST['hotel'] ||
-      is_numeric($_POST['circuit']) == FALSE ||
-      is_numeric($_POST['vehicle'] == FALSE) ||
       is_numeric($_POST['dep'] == FALSE) ||
       is_numeric($_POST['arrival'] == FALSE)
     )
   ) {
     $o = "Please verify your informations type!";
   } else {
-    $q = $pdo->prepare("INSERT INTO trips(Destination, Flight_number, Number_of_seats, Plan, Departure_date, Arrival_date, Hotel, company_id, tour_id, vehicle_id) 
-      VALUES (:Destination, :Flight_number, :Number_of_seats, :Plan, :Departure_date, :Arrival_date, :Hotel, :company_id, :circuit, :vehicle)");
+    $q = $pdo->prepare("INSERT INTO trips(Destination, Flight_number, Number_of_seats, Plan, Departure_date, Arrival_date, Hotel, company_id) 
+      VALUES (:Destination, :Flight_number, :Number_of_seats, :Plan, :Departure_date, :Arrival_date, :Hotel, :company_id)");
     $q->bindParam(':Destination', $d);
     $q->bindParam(':Flight_number', $f);
     $q->bindParam(':Number_of_seats', $s);
@@ -41,8 +37,6 @@ if (isset($_POST['submit'])) {
     $q->bindParam(':Departure_date', $de);
     $q->bindParam(':Arrival_date', $a);
     $q->bindParam(':Hotel', $h);
-    $q->bindParam(':circuit', $c);
-    $q->bindParam(':vehicle', $v);
     $q->bindParam(':company_id', $company_id);
 
 
@@ -69,8 +63,7 @@ if (isset($_POST['submit'])) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!--<script src="https://cdn.tailwindcss.com"></script>-->
-  <link href="/styles/output.css" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <title>Add trips</title>
   <style>
     * {
@@ -342,42 +335,7 @@ if (isset($_POST['submit'])) {
           <fieldset>
             <input type="text" name="seats" autocomplete="street-address" required>
           </fieldset>
-          <!-- circuit -->
-          <fieldset>
-            <td><label for="city"> Circuit
-                <?php echo " <font color='red'> * </font>"; ?>
-              </label>
-              <select name="circuit" id="co" required
-                class='bg-white rounded-lg w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>
-                <?php
-                $q = $pdo->prepare("SELECT * FROM tours WHERE company_id = $user[company_id]");
-                $q->execute();
-                $tours = $q->fetchAll();
-                foreach ($tours as $tour) {
-                  echo "<option value='$tour[id]'>$tour[destination]</option>";
-                }
-                ?>
-              </select>
-            </td>
-          </fieldset>
-          <!-- vehicle -->
-          <fieldset>
-            <td><label for="city"> Vehicle
-                <?php echo " <font color='red'> * </font>"; ?>
-              </label>
-              <select name="vehicle" id="co" required
-                class='bg-white rounded-lg w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>
-                <?php
-                $q = $pdo->prepare("SELECT * FROM vehicles WHERE company_id = $user[company_id]");
-                $q->execute();
-                $vehicles = $q->fetchAll();
-                foreach ($vehicles as $vehicle) {
-                  echo "<option value='$vehicle[id]'>$vehicle[brand]</option>";
-                }
-                ?>
-              </select>
-            </td>
-          </fieldset>
+          
         </div>
 
 

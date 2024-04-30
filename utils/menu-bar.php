@@ -54,6 +54,10 @@ $title = ucfirst($title);
                                 ];
                                 foreach ($menu as $key => $value) {
                                     $active = ($title == $key) || $title == 'Agency' && $key == "Dashboard" ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white";
+                                    // Hide customers menu for non-admin users
+                                    if ($role == 'agency' && $key == 'Customers') {
+                                        continue;
+                                    }
                                     echo "<a href='$value' class=' $active block rounded-md px-3 py-2 text-base font-medium'>$key</a>";
                                 }
                                 ?>
@@ -89,8 +93,8 @@ $title = ucfirst($title);
                                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button"
                                     tabindex="-1">
                                     <!-- Active: "bg-gray-100", Not Active: "" -->
-                                    <a href="/profile" class="block px-4 py-2 text-sm text-gray-700"
-                                        role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
+                                    <a href="/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                        tabindex="-1" id="user-menu-item-0">Your Profile</a>
                                     <a href="/utils/logout.php" class="block px-4 py-2 text-sm text-gray-700"
                                         role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</a>
                                 </div>
@@ -132,6 +136,9 @@ $title = ucfirst($title);
                     <?php
                     foreach ($menu as $key => $value) {
                         $active = $title == $key ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white";
+                        if ($role == 'agency' && $key == 'Customers') {
+                            continue;
+                        }
                         echo "<a href='$value' class=' $active block rounded-md px-3 py-2 text-base font-medium'>$key</a>";
                     }
                     ?>

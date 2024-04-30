@@ -18,7 +18,8 @@ $role = $user['user_type'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="/styles/output.css" rel="stylesheet">
+    <link href="styles/output.css" rel="stylesheet">
+    <!-- <script src="scripts/tailwind.js" defer></script> -->
     <title>My Agency</title>
 </head>
 
@@ -40,92 +41,12 @@ $role = $user['user_type'];
     <div class="bg-white py-24 sm:py-32">
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
             <dl class="grid grid-cols-1 lg:grid lg:grid-cols-4 gap-x-8 gap-y-16 text-center">
-                <?php
-                if ($role == 'admin') {
-                    try {
-                        $sql = "SELECT COUNT(id) AS num FROM companies WHERE name != 'Travago'";
-                        $stmt = $pdo->prepare($sql);
-                        $stmt->execute();
-                        $agencyCount = $stmt->fetch(PDO::FETCH_ASSOC);
-                    } catch (PDOException $e) {
-                        echo "Error: " . $e->getMessage();
-                    }
-                    echo "<div class='mx-auto flex max-w-xs flex-col gap-y-4'>
-                        <dt class='text-base leading-7 text-gray-600'>
-                            Total Companies
-                        </dt>
-                        <dd class='order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl'>";
-                    echo $agencyCount['num'] . ' agencies';
-                    echo "</dd></div>";
-                }
-                ?>
-                <div class="mx-auto flex max-w-xs flex-col gap-y-4">
-                    <dt class="text-base leading-7 text-gray-600">Total Users</dt>
-                    <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-                        <?php
-                        if ($role == 'admin') {
-
-                            try {
-                                $sql = "SELECT * FROM users WHERE user_type='agency' OR user_type='user'";
-                                $stmt = $pdo->prepare($sql);
-                                $stmt->execute();
-                                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                echo $stmt->rowCount() . ' users';
-                            } catch (PDOException $e) {
-                                echo "Error: " . $e->getMessage();
-                            }
-                        } else {
-                            try {
-                                $sql = "SELECT * FROM users WHERE company_id = $company_id AND user_type='user'";
-                                $stmt = $pdo->prepare($sql);
-                                $stmt->execute();
-                                $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                                echo $stmt->rowCount() . ' users';
-                            } catch (PDOException $e) {
-                                echo "Error: " . $e->getMessage();
-                            }
-                        }
-
-                        ?>
-                    <dt class="text-base leading-7 text-gray-600">
-                        <!-- in which how many admin and how many customers -->
-                        <?php
-                        if ($role == 'admin') {
-                            $adminCount = 0;
-                            $customerCount = 0;
-                            foreach ($users as $user) {
-                                if ($user['user_type'] == 'agency') {
-                                    $adminCount++;
-                                } else if ($user['user_type'] == 'user') {
-                                    $customerCount++;
-                                }
-                            }
-                            echo $adminCount . ' agencies and ' . $customerCount . ' customers';
-                        } else {
-                            $customerCount = 0;
-                            foreach ($users as $user) {
-                                if ($user['user_type'] == 'user') {
-                                    $customerCount++;
-                                }
-                            }
-                            echo $customerCount . ' customers';
-                        }
-
-                        ?>
-                    </dt>
-                    </dd>
-
-                </div>
                 <div class="mx-auto flex max-w-xs flex-col gap-y-2">
                     <dt class="text-base leading-7 text-gray-600">Total trips</dt>
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            if ($role == 'admin') {
-                                $sql = "SELECT * FROM trips";
-                            } else {
-                                $sql = "SELECT * FROM trips WHERE company_id = $company_id";
-                            }
+                            $sql = "SELECT * FROM trips WHERE company_id = $company_id";
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             $tripCount = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -134,14 +55,14 @@ $role = $user['user_type'];
                             $completedTrips = 0;
                             $reservedTrips = 0;
                             foreach ($tripCount as $trip) {
-                                if ($trip['Arrival_date'] < date('Y-m-d') ){
+                                if ($trip['Arrival_date'] < date('Y-m-d')) {
                                     $completedTrips++;
                                 } else if ($trip['Departure_date'] > date('Y-m-d')) {
                                     $reservedTrips++;
                                 }
                             }
                             echo "<dt class='text-base leading-7 text-gray-600'>";
-                            echo  $reservedTrips . ' reserved trips';
+                            echo $reservedTrips . ' reserved trips';
                             echo "</dt>";
                             echo "<dt class='text-base leading-7 text-gray-600'>";
                             echo $completedTrips . ' completed trips';
@@ -157,11 +78,7 @@ $role = $user['user_type'];
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            if ($role == 'admin') {
-                                $sql = "SELECT COUNT(id) AS num FROM tours";
-                            } else {
-                                $sql = "SELECT COUNT(id) AS num FROM tours WHERE company_id = $company_id";
-                            }
+                            $sql = "SELECT COUNT(id) AS num FROM tours WHERE company_id = $company_id";
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             $circuitCount = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -177,11 +94,7 @@ $role = $user['user_type'];
                     <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
                         <?php
                         try {
-                            if ($role == 'admin') {
-                                $sql = "SELECT * FROM vehicles";
-                            } else {
-                                $sql = "SELECT * FROM vehicles WHERE company_id = $company_id";
-                            }
+                            $sql = "SELECT * FROM vehicles WHERE company_id = $company_id";
                             $stmt = $pdo->prepare($sql);
                             $stmt->execute();
                             $vehicles = $stmt->fetchAll(PDO::FETCH_ASSOC);

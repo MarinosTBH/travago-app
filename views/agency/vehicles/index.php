@@ -47,21 +47,12 @@ if (isset($_GET['search'])) {
     $search = $_GET['search'];
     if (empty($search)) {
         $errorSearch = "Please enter a keyword to search";
-    } else if ($user['user_type'] == 'admin') {
-        // search by any keyword
-        $sql = "SELECT * FROM vehicles WHERE Id LIKE '%$search%'";
-        $result = $pdo->query($sql);
-        $vehicles = $result->fetchAll();
     } else {
         // search by any keyword
         $sql = "SELECT * FROM vehicles WHERE Id LIKE '%$search%' AND company_id = $company_id";
         $result = $pdo->query($sql);
         $vehicles = $result->fetchAll();
     }
-} else if ($user['user_type'] == 'admin') {
-    $sql = "SELECT * FROM vehicles";
-    $result = $pdo->query($sql);
-    $vehicles = $result->fetchAll();
 } else {
     $sql = "SELECT * FROM vehicles where company_id = $company_id";
     $result = $pdo->query($sql);
