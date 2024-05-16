@@ -272,7 +272,7 @@ if (isset($_GET['search_vehicles'])) {
                 $availability = $trip['Number_of_seats'] - ($trip['number_of_booked_seats'] ?? 0);
                 $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
                 $availability_status = $availability > 0 ? 'Available' : 'Full';
-                $description = $trip['description'] ?? 'No description available';
+                $description = $trip['Plan'];
                 $id = $trip['Id'];
                 $tour_id = $trip['tour_id'] ?? '';
                 $vehicle_id = $trip['vehicle_id'] ?? '';

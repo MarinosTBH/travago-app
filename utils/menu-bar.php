@@ -50,12 +50,13 @@ $title = ucfirst($title);
                                     "Trips" => "/agency/trips",
                                     "Circuits" => "/agency/circuits",
                                     "Vehicles" => "/agency/vehicles",
-                                    "Customers" => "/agency/customers"
+                                    "Customers" => "/agency/customers",
+                                    "Stats" => "/agency/statistics",
                                 ];
                                 foreach ($menu as $key => $value) {
                                     $active = ($title == $key) || $title == 'Agency' && $key == "Dashboard" ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white";
                                     // Hide customers menu for non-admin users
-                                    if ($role == 'agency' && $key == 'Customers') {
+                                    if ($role == 'agency' && ($key == 'Customers' || $key == 'Stats')) {
                                         continue;
                                     }
                                     echo "<a href='$value' class=' $active block rounded-md px-3 py-2 text-base font-medium'>$key</a>";
@@ -136,7 +137,7 @@ $title = ucfirst($title);
                     <?php
                     foreach ($menu as $key => $value) {
                         $active = $title == $key ? "bg-gray-900 text-white" : "text-gray-300 hover:bg-gray-700 hover:text-white";
-                        if ($role == 'agency' && $key == 'Customers') {
+                        if ($role == 'agency' && $key == 'Customers' || $key == 'Stats') {
                             continue;
                         }
                         echo "<a href='$value' class=' $active block rounded-md px-3 py-2 text-base font-medium'>$key</a>";

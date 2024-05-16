@@ -14,6 +14,7 @@ if (!isset($_GET['id'])) {
 
 // declae vars
 $user = $_SESSION['USER'];
+$userId = $user['id'];
 $id = $_GET['id'];
 $error = "";
 $success = "";
@@ -26,12 +27,17 @@ $trip = $result->fetch();
 if (!$trip) {
     die('Trip not found');
 }
-// get the booking with id
-$sql = "SELECT * FROM bookings WHERE trip_id = $id AND user_id = {$user['id']}";
-$result = $pdo->query($sql);
-$booking = $result->fetchAll();
 
-if (isset($booking['user_id']) && $booking['user_id'] == $user['id']) {
+// get the booking with id
+$sql = "SELECT * FROM bookings WHERE trip_id = $id AND user_id = $userId";
+$result = $pdo->query($sql);
+$booking = $result->fetch();
+
+if (
+    isset($booking[
+        'user_id'
+    ]) && $booking['user_id'] == $userId
+) {
     die("You already booked this trip");
 
 }
@@ -42,26 +48,26 @@ $price = $trip['price'] ?? 1000;
 $availability = $trip['Number_of_seats'] - ($trip['number_of_booked_seats'] ?? 0);
 $status = $departure_date > date('Y-m-d') ? 'Upcoming' : 'Completed';
 $availability_status = $availability > 0 ? 'Available' : 'Full';
-$description = $trip['description'] ?? 'No description available';
+$description = $trip['Plan'];
 $userId = $user['id'];
 // tour and vehicle
-$tour_id = $trip['tour_id'];
-$vehicle_id = $trip['vehicle_id'];
-
+// $tour_id = $trip['tour_id'];
+// $vehicle_id = $trip['vehicle_id'];
+// print_r($trip); 
 $circuit = 'No destination';
 $brand = 'No brand';
-if ($tour_id) {
-    $sql = "SELECT * FROM tours WHERE id = $tour_id";
-    $result = $pdo->query($sql);
-    $tour = $result->fetch();
-    $circuit = $tour['destination'] ?? 'No destination';
-}
-if ($vehicle_id) {
-    $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
-    $result = $pdo->query($sql);
-    $vehicle = $result->fetch();
-    $brand = $vehicle['brand'] ?? 'No brand';
-}
+// if ($tour_id) {
+//     $sql = "SELECT * FROM tours WHERE id = $tour_id";
+//     $result = $pdo->query($sql);
+//     $tour = $result->fetch();
+//     $circuit = $tour['destination'] ?? 'No destination';
+// }
+// if ($vehicle_id) {
+//     $sql = "SELECT * FROM vehicles WHERE id = $vehicle_id";
+//     $result = $pdo->query($sql);
+//     $vehicle = $result->fetch();
+//     $brand = $vehicle['brand'] ?? 'No brand';
+// }
 
 // METHOD
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
@@ -182,8 +188,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         <p class='text-sm text-gray-100 py-2'>
                             <?php echo $description ?>
                         </p>
-                        <p class='text-sm font-semibold text-gray-100 py-2''>Tour: <?php echo $circuit ?> </p>
-                        <p class=' text-sm font-semibold text-gray-100 py-2''>Vehicle: <?php echo $brand ?></p>
+                        <!-- <p class='text-sm font-semibold text-gray-100 py-2''>Tour: <?php echo $circuit ?> </p>
+                        <p class=' text-sm font-semibold text-gray-100 py-2''>Vehicle: <?php echo $brand ?></p> -->
                         <!-- select payment method -->
                         <select id="credit_card" name="credit_card"
                             class='w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-indigo-500 transition-colors cursor-pointer'>

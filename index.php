@@ -104,7 +104,7 @@ $routes = array(
     ),
     '/agency/statistics' => array(
         'view' => 'agency/statistics.php',
-        'pattern' => '/^\\/agency\/bookings$/'
+        'pattern' => '/^\\/agency\/statistics$/'
     ),
     // Add more routes as needed...
 );
